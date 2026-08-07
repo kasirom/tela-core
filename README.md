@@ -60,7 +60,7 @@ Jalankan perintah `tela jalankan`. Hasil cetak akan muncul di layar konsol Anda 
 ### BAB 2: PROYEK 1 – KALKULATOR ILMIAH ANTARMUKA TERMINAL (TUI)
 
 Kalkulator ini menggunakan kontrol ANSI terminal untuk mempercantik tata letak konsol tanpa dependensi berat.
-Full Kode Diperlihatkan Untuk Memperjelas Pengguna Tela Core di Seluruh Dunia Beserta Gambar Hasil Pemrogaman. 
+Full Kode Diperlihatkan Untuk Memperjelas Pengguna Tela Core di Seluruh Dunia Beserta Gambar Hasil Pemrogaman di Folder Screenshoot. 
 
 #### 2.1 Membangun Modul Kontrol Terminal (`src/tui.tela`)
 ```tela
