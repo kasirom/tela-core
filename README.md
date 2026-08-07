@@ -46,11 +46,11 @@ Kompilasi dan manajemen proyek dikelola melalui perintah berikut:
 * `tela jalankan`: Kompilasi sekaligus mengeksekusi biner.
 * `tela uji`: Menjalankan fungsi pengujian dengan penanda `@uji`.
 
-#### 1.4 Proyek Pertama: "Halo Nusantara!"
+#### 1.4 Proyek Pertama: "Halo Dunia!"
 Buat berkas `src/utama.tela`:
 ```tela
 fungsi utama() {
-    Sistem::cetak_teks("Halo Nusantara! Selamat datang di Tela Core.");
+    Sistem::cetak_teks("Halo Dunia, Ini dari Tela Core Nusantara!");
 }
 ```
 Jalankan perintah `tela jalankan`. Hasil cetak akan muncul di layar konsol Anda secara instan.
