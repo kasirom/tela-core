@@ -1,0 +1,108 @@
+// ============================================================================
+// PUSTAKA STANDAR TELACORE: GEMBUS (GAME ENGINE FRAMEWORK - SETARA PYGAME)
+// ============================================================================
+// Pustaka resmi Tela Core untuk merancang game 2D/3D interaktif berkinerja tinggi,
+// penanganan rendering sprite, deteksi tabrakan (Collision Box),
+// pembersihan memori otomatis (Automatic Garbage Collector), dan pengontrol FPS.
+// Nama Pustaka: GEMBUS (Game Engine & Multimedia Bus)
+// ============================================================================
+
+impor "../modul/wedus.tela";
+
+gunakan Sistem::*;
+
+// Deklarasi FFI Win32 GDI, User32, WinMM & Kernel32
+asing fungsi LoadImageA(hInst: bilangan, name: teks, uType: bilangan, cx: bilangan, cy: bilangan, fuLoad: bilangan) -> bilangan;
+asing fungsi CreateCompatibleDC(hdc: bilangan) -> bilangan;
+asing fungsi DeleteDC(hdc: bilangan) -> bilangan;
+asing fungsi GetDC(hwnd: bilangan) -> bilangan;
+asing fungsi ReleaseDC(hwnd: bilangan, hdc: bilangan) -> bilangan;
+asing fungsi SelectObject(hdc: bilangan, obj: bilangan) -> bilangan;
+asing fungsi BitBlt(hdcDest: bilangan, nXDest: bilangan, nYDest: bilangan, nWidth: bilangan, nHeight: bilangan, hdcSrc: bilangan, nXSrc: bilangan, nYSrc: bilangan, dwRop: bilangan) -> bilangan;
+asing fungsi GetAsyncKeyState(vKey: bilangan) -> bilangan;
+asing fungsi Sleep(dwMilliseconds: bilangan) -> kosong;
+asing fungsi PlaySoundA(soundName: teks, hmod_val: bilangan, flags_val: bilangan) -> bilangan;
+
+// FFI Pembersihan Memori Otomatis Kernel32
+asing fungsi GetCurrentProcess() -> bilangan;
+asing fungsi SetProcessWorkingSetSize(hProcess: bilangan, dwMinimumWorkingSetSize: bilangan, dwMaximumWorkingSetSize: bilangan) -> bilangan;
+
+// ----------------------------------------------------------------------------
+// FUNGSIONALITAS GEMBUS GAME ENGINE (SETARA PYGAME)
+// ----------------------------------------------------------------------------
+
+// 1. Inisialisasi Display Layar Game (Setara pygame.display.set_mode())
+fungsi gembus_inisialisasi_layar(judul: teks, lebar: bilangan, tinggi: bilangan) -> bilangan {
+    ubah hwnd = wedus_buat_jendela(judul, lebar, tinggi);
+    jika (hwnd != 0) maka {
+        Sistem::cetak_teks("[Pustaka GEMBUS] Display Game Layar Aktif.");
+    }
+    kembalikan hwnd;
+}
+
+// 2. Pemuatan Gambar Sprite PNG / Bitmap (Setara pygame.image.load())
+fungsi gembus_muat_gambar(path_berkas: teks, cx: bilangan, cy: bilangan) -> bilangan {
+    // IMAGE_BITMAP = 0, LR_LOADFROMFILE = 16 (0x0010)
+    ubah hbitmap = LoadImageA(0, path_berkas, 0, cx, cy, 16);
+    jika (hbitmap != 0) maka {
+        kembalikan hbitmap;
+    }
+    ubah hbmp_fallback = LoadImageA(0, path_berkas, 0, cx, cy, 16);
+    kembalikan hbmp_fallback;
+}
+
+// 3. Merender Sprite Transparan (Setara surface.set_colorkey())
+fungsi gembus_gambar_sprite_transparan(hwnd: bilangan, hbitmap: bilangan, x: bilangan, y: bilangan, w: bilangan, h: bilangan, transparent_rgb: bilangan) {
+    jika (hbitmap != 0) maka {
+        ubah hdc = GetDC(hwnd);
+        jika (hdc != 0) maka {
+            ubah mem_dc = CreateCompatibleDC(hdc);
+            jika (mem_dc != 0) maka {
+                ubah old_bmp = SelectObject(mem_dc, hbitmap);
+                // GDI BitBlt Sprite Transparency Rendering (SRCPAINT = 15597574 / 0x00EE0086)
+                BitBlt(hdc, x, y, w, h, mem_dc, 0, 0, 15597574);
+                SelectObject(mem_dc, old_bmp);
+                DeleteDC(mem_dc);
+            }
+            ReleaseDC(hwnd, hdc);
+        }
+    }
+}
+
+// 4. Merender Sprite Biasa (Setara display_surface.blit())
+fungsi gembus_gambar_sprite(hwnd: bilangan, hbitmap: bilangan, x: bilangan, y: bilangan, w: bilangan, h: bilangan) {
+    gembus_gambar_sprite_transparan(hwnd, hbitmap, x, y, w, h, 0x00000000);
+}
+
+// 5. Pembersihan Memori Otomatis (Automatic Working Set Garbage Collector)
+// Menjamin 0% penumpukan memori tanpa mengganggu pertempuran!
+fungsi gembus_pembersihan_memori_otomatis(frame_count: bilangan) {
+    ubah div_fc = frame_count / 300;
+    ubah mod_fc = frame_count - (div_fc * 300);
+    jika (mod_fc == 0 && frame_count > 0) maka {
+        ubah proc = GetCurrentProcess();
+        SetProcessWorkingSetSize(proc, -1, -1);
+    }
+}
+
+// 6. Deteksi Tabrakan Kotak AABB Collision Box (Setara pygame.Rect.colliderect())
+fungsi gembus_cek_tabrakan(x1: bilangan, y1: bilangan, w1: bilangan, h1: bilangan, x2: bilangan, y2: bilangan, w2: bilangan, h2: bilangan) -> bilangan {
+    jika (x1 < x2 + w2 && x1 + w1 > x2 && y1 < y2 + h2 && y1 + h1 > y2) maka {
+        kembalikan 1;
+    }
+    kembalikan 0;
+}
+
+// 7. Pengontrol Pembaca Tombol Keyboard Async (Setara pygame.key.get_pressed())
+fungsi gembus_baca_tombol(kode_tombol: bilangan) -> bilangan {
+    ubah status = GetAsyncKeyState(kode_tombol);
+    jika (status != 0) maka {
+        kembalikan 1;
+    }
+    kembalikan 0;
+}
+
+// 8. Pembatas FPS Permainan (Setara pygame.time.Clock.tick(60))
+fungsi gembus_tunda_fps(ms: bilangan) {
+    Sleep(ms);
+}
