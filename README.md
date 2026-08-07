@@ -60,6 +60,7 @@ Jalankan perintah `tela jalankan`. Hasil cetak akan muncul di layar konsol Anda 
 ### BAB 2: PROYEK 1 – KALKULATOR ILMIAH ANTARMUKA TERMINAL (TUI)
 
 Kalkulator ini menggunakan kontrol ANSI terminal untuk mempercantik tata letak konsol tanpa dependensi berat.
+Full Kode Diperlihatkan Untuk Memperjelas Pengguna Tela Core di Seluruh Dunia Beserta Gambar Hasil Pemrogaman. 
 
 #### 2.1 Membangun Modul Kontrol Terminal (`src/tui.tela`)
 ```tela
@@ -198,36 +199,390 @@ fungsi tui_kursor_kolom_46() -> kosong {
 ```tela
 impor "src/tui.tela";
 gunakan Sistem::*;
+gunakan Matematika::*;
+gunakan Berkas::*;
+gunakan Waktu::*;
 
-fungsi hitung(a: desimal, b: desimal, op: teks) -> desimal {
-    // Penanganan pembagian dengan nol menggunakan pengaman bersyarat
-    jika (op == "/") maka {
-        jika (b == 0.0) maka {
-            cetak_teks("⚠️ Peringatan: Pembagian dengan nol terdeteksi.");
-            kembalikan 0.0;
+// ======================================
+// KALKULATOR TUI TELA CORE - VISUAL GUI ANSI
+// ======================================
+
+fungsi gambar_kalkulator(kiri: desimal, kanan: desimal, op: bilangan, fokus: bilangan, ngetik_kanan: bilangan) -> kosong {
+    // Gunakan \e[H untuk kembali ke atas (TANPA clear screen) agar tidak ada kedipan/delay!
+    // Gabung string bagian atas UI untuk kecepatan tinggi
+    // =========================================================================
+    // PERINGATAN: JANGAN ASAL MENAMBAHKAN BARIS BARU (\n) PADA STRING DI BAWAH INI!
+    // =========================================================================
+    // Jika Anda menambahkan baris baru (seperti enter / \n), maka kordinat Y dari 
+    // tombol-tombol di bawahnya akan ikut turun/bergeser. Jika bergeser, Anda WAJIB
+    // menyesuaikan angka `y` di dalam fungsi `tangkap_mouse()` yang ada di bawah.
+    // =========================================================================
+    cetak_teks("\e[H\e[?25l\e[44m\e[37;1m ╔════════════════════════════════════════════════════════════╗ \n ║                   Calculator Telacore                      ║ \n ╠════════════════════════════════════════════════════════════╣ \n ║                                                            ║ \n ║    [ \e[47m\e[30m                                                 \e[9G");
+    
+    jika (fokus == 0) maka {
+        cetak_desimal(kiri);
+    } lainnya {
+        jika (fokus == 1) maka {
+            cetak_desimal(kiri);
+            jika (op == 1) maka { cetak_teks(" + "); }
+            jika (op == 2) maka { cetak_teks(" - "); }
+            jika (op == 3) maka { cetak_teks(" * "); }
+            jika (op == 4) maka { cetak_teks(" / "); }
+            jika (op == 5) maka { cetak_teks(" ^ "); }
+            
+            jika (ngetik_kanan == 1) maka {
+                cetak_desimal(kanan);
+            }
+        } lainnya {
+            // fokus == 2 (hasil)
+            cetak_desimal(kiri);
+        }
+    }
+    
+    // Gabung string bagian bawah UI untuk rendering secepat kilat (0 delay)
+    cetak_teks("\e[58G\e[44m\e[37;1m ]   ║ \n ║                                                            ║ \n ║    \e[45m\e[37;1m sin  \e[44m\e[37;1m     \e[46m\e[31;1m  M+  \e[44m\e[37;1m     \e[46m\e[31;1m  M-  \e[44m\e[37;1m     \e[46m\e[31;1m  MR  \e[44m\e[37;1m     \e[46m\e[31;1m  MC  \e[44m\e[37;1m      ║ \n ║                                                            ║ \n ║    \e[45m\e[37;1m cos  \e[44m\e[37;1m     \e[46m\e[30m  +   \e[44m\e[37;1m     \e[46m\e[30m  -   \e[44m\e[37;1m     \e[46m\e[30m  *   \e[44m\e[37;1m     \e[46m\e[30m  /   \e[44m\e[37;1m      ║ \n ║                                                            ║ \n ║    \e[45m\e[37;1m tan  \e[44m\e[37;1m     \e[46m\e[30m  7   \e[44m\e[37;1m     \e[46m\e[30m  8   \e[44m\e[37;1m     \e[46m\e[30m  9   \e[44m\e[37;1m     \e[46m\e[31;1m Off  \e[44m\e[37;1m      ║ \n ║                                                            ║ \n ║    \e[45m\e[37;1m log  \e[44m\e[37;1m     \e[46m\e[30m  4   \e[44m\e[37;1m     \e[46m\e[30m  5   \e[44m\e[37;1m     \e[46m\e[30m  6   \e[44m\e[37;1m     \e[46m\e[31;1m  C   \e[44m\e[37;1m      ║ \n ║                                                            ║ \n ║    \e[45m\e[37;1m sqrt \e[44m\e[37;1m     \e[46m\e[30m  1   \e[44m\e[37;1m     \e[46m\e[30m  2   \e[44m\e[37;1m     \e[46m\e[30m  3   \e[44m\e[37;1m     \e[46m\e[31;1m  CE  \e[44m\e[37;1m      ║ \n ║                                                            ║ \n ║    \e[45m\e[37;1m ^    \e[44m\e[37;1m     \e[46m\e[30m  0   \e[44m\e[37;1m     \e[46m\e[30m  .   \e[44m\e[37;1m     \e[46m\e[30m Del  \e[44m\e[37;1m     \e[46m\e[30m  =   \e[44m\e[37;1m      ║ \n ╚════════════════════════════════════════════════════════════╝ \n\e[0m\n \e[33mInfo:\e[0m Klik langsung di GUI kalkulator! \n Tekan \e[31m[?]\e[0m di keyboard untuk Menu Bantuan.\n Ini Adalah Aplikasi Yg Dibuat Dari Telacore Ashura\n");
+    kembalikan;
+}
+
+fungsi layar_bantuan() -> kosong {
+    cetak_teks("\e[2J\e[H"); 
+    cetak_teks("\e[44m\e[37;1m");
+    cetak_teks(" ╔════════════════════════════════════════════════════════════════════╗ \n");
+    cetak_teks(" ║                         MENU BANTUAN TELA                          ║ \n");
+    cetak_teks(" ╠════════════════════════════════════════════════════════════════════╣ \n");
+    cetak_teks(" ║ Made In Mbah Suro | Kontak: 085325399007                           ║ \n");
+    cetak_teks(" ║ Email   : kasirom97@gmail.com                                      ║ \n");
+    cetak_teks(" ║                                                                    ║ \n");
+    cetak_teks(" ║ PETUNJUK TOMBOL SPESIAL & SCIENTIFIC:                              ║ \n");
+    cetak_teks(" ║ 1. M+   : Menambahkan nilai layar ke memori                        ║ \n");
+    cetak_teks(" ║    Cth  : Ketik 10, klik M+, memori jadi 10                        ║ \n");
+    cetak_teks(" ║ 2. M-   : Mengurangi nilai layar dari memori                       ║ \n");
+    cetak_teks(" ║    Cth  : Ketik 2, klik M-, memori jadi 8                          ║ \n");
+    cetak_teks(" ║ 3. MR   : Menampilkan (Recall) nilai memori                        ║ \n");
+    cetak_teks(" ║ 4. MC   : Menghapus (Clear) isi memori jadi 0                      ║ \n");
+    cetak_teks(" ║ 5. sin  : Menghitung nilai Sinus (dalam radian). Cth: 0 sin = 0    ║ \n");
+    cetak_teks(" ║ 6. cos  : Menghitung nilai Cosinus. Cth: 0 cos = 1                 ║ \n");
+    cetak_teks(" ║ 7. tan  : Menghitung nilai Tangen.                                 ║ \n");
+    cetak_teks(" ║ 8. log  : Menghitung Logaritma (basis 10). Cth: 100 log = 2        ║ \n");
+    cetak_teks(" ║ 9. sqrt : Menghitung Akar Kuadrat. Cth: 144 sqrt = 12              ║ \n");
+    cetak_teks(" ║ 10. ^   : Menghitung Pangkat. Cth: 2 ^ 3 = 8                       ║ \n");
+    cetak_teks(" ║ 11. CE  : Clear Error (Hapus angka ketikan saat ini saja)          ║ \n");
+    cetak_teks(" ║ 12. C   : Clear All (Reset semua perhitungan awal)                 ║ \n");
+    cetak_teks(" ║ 13. Off : Keluar dari Aplikasi Kalkulator                          ║ \n");
+    cetak_teks(" ║                                                                    ║ \n");
+    cetak_teks(" ║ Tekan sembarang tombol untuk kembali...                            ║ \n");
+    cetak_teks(" ╚════════════════════════════════════════════════════════════════════╝ \n");
+    cetak_teks("\e[0m\n"); 
+    
+    // Tunggu input sekali
+    baca_tombol();
+    kembalikan;
+}
+
+fungsi hitung(a: desimal, b: desimal, op: bilangan) -> desimal {
+    jika (op == 1) maka { kembalikan a + b; }
+    jika (op == 2) maka { kembalikan a - b; }
+    jika (op == 3) maka { kembalikan a * b; }
+    jika (op == 4) maka {
+        jika (b == 0) maka {
+            kembalikan a;
         }
         kembalikan a / b;
     }
-    jika (op == "+") maka { kembalikan a + b; }
-    jika (op == "-") maka { kembalikan a - b; }
-    jika (op == "*") maka { kembalikan a * b; }
-    kembalikan 0.0;
+    jika (op == 5) maka { kembalikan pangkat(a, b); }
+    kembalikan a;
 }
 
-fungsi utama() {
-    tui_bersihkan_layar();
-    tui_sembunyikan_kursor();
-    tui_posisi(2, 5);
+fungsi tangkap_mouse(koordinat: bilangan) -> bilangan {
+    ubah y: bilangan = koordinat - ((koordinat / 1000) * 1000); // 3 digit terakhir adalah Y
+    ubah x: bilangan = koordinat / 1000;
     
-    cetak_teks("=== KALKULATOR TELACORE TUI ===");
-    ubah x: desimal = 75.5;
-    ubah y: desimal = 0.0;
+    // Mapping Koordinat X Baru
+    // Kolom: 7-12(btn1), 18-23(btn2), 29-34(btn3), 40-45(btn4), 51-56(btn5)
+    ubah kol: bilangan = 0;
+    jika (x >= 7 && x <= 12) maka { kol = 1; }
+    jika (x >= 18 && x <= 23) maka { kol = 2; }
+    jika (x >= 29 && x <= 34) maka { kol = 3; }
+    jika (x >= 40 && x <= 45) maka { kol = 4; }
+    jika (x >= 51 && x <= 56) maka { kol = 5; }
     
-    tui_posisi(4, 5);
-    cetak_teks("Hasil Pembagian: ");
-    ubah hasil = hitung(x, y, "/");
-    cetak_desimal(hasil);
+    jika (kol == 0) maka { kembalikan 0; }
+    
+    // =========================================================================
+    // MAPPING KOORDINAT Y (BARIS LAYAR)
+    // =========================================================================
+    // Y adalah nomor baris di terminal. Baris ke-1 dimulai dari "╔════...".
+    // Saat ini baris tombol adalah:
+    // Baris 7: Tombol-tombol M (sin, M+, dll)
+    // Baris 9: Tombol Operator (cos, +, dll)
+    // Baris 11: Tombol Angka Atas (tan, 7, 8, 9, Off)
+    // Baris 13: Tombol Angka Tengah (log, 4, 5, 6, C)
+    // Baris 15: Tombol Angka Bawah (sqrt, 1, 2, 3, CE)
+    // Baris 17: Tombol Bawah Sendiri (^, 0, ., Del, =)
+    //
+    // PENTING: Jika Anda mengedit desain UI di fungsi `gambar_kalkulator()` dan
+    // menambahkan baris teks baru di atas kalkulator, nilai-nilai `y` di bawah
+    // ini WAJIB Anda tambah/kurangi sesuai jumlah baris yang bergeser!
+    // =========================================================================
+    jika (y == 7) maka {
+        jika (kol == 1) maka { kembalikan 301; } // sin
+        jika (kol == 2) maka { kembalikan 201; } // M+
+        jika (kol == 3) maka { kembalikan 202; } // M-
+        jika (kol == 4) maka { kembalikan 203; } // MR
+        jika (kol == 5) maka { kembalikan 204; } // MC
+    }
+    jika (y == 9) maka {
+        jika (kol == 1) maka { kembalikan 302; } // cos
+        jika (kol == 2) maka { kembalikan 43; } // +
+        jika (kol == 3) maka { kembalikan 45; } // -
+        jika (kol == 4) maka { kembalikan 42; } // *
+        jika (kol == 5) maka { kembalikan 47; } // /
+    }
+    jika (y == 11) maka {
+        jika (kol == 1) maka { kembalikan 303; } // tan
+        jika (kol == 2) maka { kembalikan 55; } // 7
+        jika (kol == 3) maka { kembalikan 56; } // 8
+        jika (kol == 4) maka { kembalikan 57; } // 9
+        jika (kol == 5) maka { kembalikan 113; } // q (Off)
+    }
+    jika (y == 13) maka {
+        jika (kol == 1) maka { kembalikan 304; } // log
+        jika (kol == 2) maka { kembalikan 52; } // 4
+        jika (kol == 3) maka { kembalikan 53; } // 5
+        jika (kol == 4) maka { kembalikan 54; } // 6
+        jika (kol == 5) maka { kembalikan 99; } // C
+    }
+    jika (y == 15) maka {
+        jika (kol == 1) maka { kembalikan 305; } // sqrt
+        jika (kol == 2) maka { kembalikan 49; } // 1
+        jika (kol == 3) maka { kembalikan 50; } // 2
+        jika (kol == 4) maka { kembalikan 51; } // 3
+        jika (kol == 5) maka { kembalikan 101; } // CE (e)
+    }
+    jika (y == 17) maka {
+        jika (kol == 1) maka { kembalikan 306; } // pow (^)
+        jika (kol == 2) maka { kembalikan 48; } // 0
+        jika (kol == 3) maka { kembalikan 46; } // .
+        jika (kol == 4) maka { kembalikan 8; } // Backspace
+        jika (kol == 5) maka { kembalikan 61; } // =
+    }
+    kembalikan 0;
 }
+
+fungsi utama() -> bilangan {
+    // Clear screen sekali saja di awal
+    cetak_teks("\e[2J");
+    // Enable Mouse Tracking di Terminal (SGR Mode)
+    cetak_teks("\e[?1000h\e[?1015h\e[?1006h");
+
+    ubah jalan: bilangan = 1;
+    ubah layar_kiri: desimal = 0.0;
+    ubah layar_kanan: desimal = 0.0;
+    ubah memori: desimal = 0.0;
+    
+    // op: 0=none, 1=+, 2=-, 3=*, 4=/
+    ubah op: bilangan = 0; 
+    
+    // fokus: 0=kiri, 1=kanan, 2=hasil
+    ubah fokus: bilangan = 0; 
+    ubah ngetik_kanan: bilangan = 0;
+    
+    gambar_kalkulator(layar_kiri, layar_kanan, op, fokus, ngetik_kanan);
+
+    selama (jalan == 1) {
+        ubah tombol: bilangan = baca_tombol();
+        
+        jika (tombol == 63) maka { // 63 adalah '?'
+            layar_bantuan();
+            cetak_teks("\e[2J"); // Clear screen sebelum gambar ulang
+            gambar_kalkulator(layar_kiri, layar_kanan, op, fokus, ngetik_kanan);
+            tombol = 0;
+        }
+        
+        // Cek Escape Sequence untuk Mouse
+        jika (tombol == 27) maka {
+            ubah c1: bilangan = baca_tombol();
+            jika (c1 == 91) maka { // '['
+                ubah c2: bilangan = baca_tombol();
+                jika (c2 == 60) maka { // '<'
+                    // Ini adalah mouse!
+                    ubah l_loop: bilangan = 1;
+                    selama (l_loop == 1) {
+                        ubah cb: bilangan = baca_tombol();
+                        jika (cb == 59) maka { l_loop = 0; }
+                    }
+                    
+                    ubah x: bilangan = 0;
+                    ubah l_loop2: bilangan = 1;
+                    selama (l_loop2 == 1) {
+                        ubah cx: bilangan = baca_tombol();
+                        jika (cx == 59) maka { l_loop2 = 0; }
+                        lainnya { x = x * 10 + (cx - 48); }
+                    }
+                    
+                    ubah y: bilangan = 0;
+                    ubah is_press: bilangan = 0;
+                    ubah l_loop3: bilangan = 1;
+                    selama (l_loop3 == 1) {
+                        ubah cy: bilangan = baca_tombol();
+                        jika (cy == 77 || cy == 109) maka {
+                            jika (cy == 77) maka { is_press = 1; }
+                            l_loop3 = 0;
+                        } lainnya {
+                            y = y * 10 + (cy - 48);
+                        }
+                    }
+                    
+                    jika (is_press == 1) maka {
+                        tombol = tangkap_mouse(x * 1000 + y);
+                        jika (tombol != 0) maka {
+                            // Suara beep akan dipanggil di bawah
+                        }
+                    } lainnya {
+                        tombol = 0; // Release diabaikan
+                    }
+                } lainnya {
+                    jika (c2 == 27 || c2 == 81 || c2 == 113) maka { jalan = 0; }
+                }
+            } lainnya {
+                // Tombol esc saja untuk off
+                jalan = 0;
+            }
+        }
+        
+        // Proses logic kalkulator
+        jika (tombol != 0) maka {
+            bunyi_bip(); // Bunyi untuk semua input (mouse & keyboard)
+            // Cek Memory
+            jika (tombol >= 201 && tombol <= 204) maka {
+                jika (tombol == 201) maka { memori = memori + layar_kiri; }
+                jika (tombol == 202) maka { memori = memori - layar_kiri; }
+                jika (tombol == 203) maka { 
+                    jika (fokus == 0 || fokus == 2) maka {
+                        layar_kiri = memori;
+                    } lainnya {
+                        layar_kanan = memori;
+                        ngetik_kanan = 1;
+                    }
+                }
+                jika (tombol == 204) maka { memori = 0.0; }
+            } lainnya {
+                // Cek Scientific (Unary: 301-305)
+                jika (tombol >= 301 && tombol <= 305) maka {
+                    ubah target: desimal = layar_kiri;
+                    jika (fokus == 1 && ngetik_kanan == 1) maka {
+                        target = layar_kanan;
+                    }
+                    
+                    jika (tombol == 301) maka { target = sin(target); }
+                    jika (tombol == 302) maka { target = cos(target); }
+                    jika (tombol == 303) maka { target = tan(target); }
+                    jika (tombol == 304) maka { target = logaritma(target); }
+                    jika (tombol == 305) maka { target = akar(target); }
+                    
+                    jika (fokus == 1 && ngetik_kanan == 1) maka {
+                        layar_kanan = target;
+                    } lainnya {
+                        layar_kiri = target;
+                        fokus = 2; // Paksa jadi hasil jika diterapkan ke layar kiri
+                    }
+                } lainnya {
+                // Cek jika tombol adalah digit 0-9 (ASCII 48 - 57)
+                jika (tombol >= 48 && tombol <= 57) maka {
+                ubah digit: bilangan = tombol - 48;
+                
+                jika (fokus == 2) maka {
+                    layar_kiri = 0.0 + digit;
+                    fokus = 0;
+                    op = 0;
+                } lainnya {
+                    jika (fokus == 0) maka {
+                        layar_kiri = layar_kiri * 10.0 + digit;
+                    } lainnya {
+                        layar_kanan = layar_kanan * 10.0 + digit;
+                        ngetik_kanan = 1;
+                    }
+                }
+            } lainnya {
+                // Cek operator: + (43), - (45), * (42), / (47), ^ (306)
+                jika (tombol == 43 || tombol == 45 || tombol == 42 || tombol == 47 || tombol == 306) maka {
+                    ubah new_op: bilangan = 0;
+                    jika (tombol == 43) maka { new_op = 1; }
+                    jika (tombol == 45) maka { new_op = 2; }
+                    jika (tombol == 42) maka { new_op = 3; }
+                    jika (tombol == 47) maka { new_op = 4; }
+                    jika (tombol == 306) maka { new_op = 5; }
+                    
+                    jika (fokus == 1 && ngetik_kanan == 1) maka {
+                        layar_kiri = hitung(layar_kiri, layar_kanan, op);
+                    } 
+                    
+                    layar_kanan = 0.0;
+                    op = new_op;
+                    fokus = 1; 
+                    ngetik_kanan = 0;
+                } lainnya {
+                    // Cek samadengan: = (61) atau Enter (13 atau 10)
+                    jika (tombol == 61 || tombol == 13 || tombol == 10) maka {
+                        jika (fokus == 1 && op != 0) maka {
+                            ubah hasil_sementara: desimal = hitung(layar_kiri, layar_kanan, op);
+                            
+                            // Tulis ke riwayat
+                            ubah f: teks = buka_file("riwayat.txt", "a");
+                            tulis_teks(f, "[");
+                            tulis_teks(f, waktu_sekarang());
+                            tulis_teks(f, "] ");
+                            tulis_desimal(f, layar_kiri);
+                            jika (op == 1) maka { tulis_teks(f, " + "); }
+                            jika (op == 2) maka { tulis_teks(f, " - "); }
+                            jika (op == 3) maka { tulis_teks(f, " * "); }
+                            jika (op == 4) maka { tulis_teks(f, " / "); }
+                            tulis_desimal(f, layar_kanan);
+                            tulis_teks(f, " = ");
+                            tulis_desimal(f, hasil_sementara);
+                            tulis_teks(f, "\n");
+                            tutup_file(f);
+
+                            layar_kiri = hasil_sementara;
+                            op = 0;
+                            fokus = 2; 
+                            ngetik_kanan = 0;
+                        }
+                    } lainnya {
+                        // Cek Clear: C (67) atau c (99)
+                        jika (tombol == 67 || tombol == 99) maka {
+                            layar_kiri = 0.0;
+                            layar_kanan = 0.0;
+                            op = 0;
+                            fokus = 0;
+                            ngetik_kanan = 0;
+                        } lainnya {
+                            // Cek Off: Esc (27), Q (81), q (113)
+                            jika (tombol == 81 || tombol == 113) maka {
+                                jalan = 0;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        }
+        }
+        
+        jika (jalan == 1) maka {
+            gambar_kalkulator(layar_kiri, layar_kanan, op, fokus, ngetik_kanan);
+        }
+    }
+    
+    // Disable mouse tracking & kembalikan kursor
+    tui_matikan_mouse();
+    tui_tampilkan_kursor();
+    tui_bersihkan_layar();
+    cetak_teks("\e[35;1mKalkulator Dimatikan. Sampai Jumpa!\e[0m\n");
+    kembalikan 0;
+}
+
+utama();
 ```
 
 ---
