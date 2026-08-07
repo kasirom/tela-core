@@ -1028,5 +1028,5 @@ fungsi alokasi_shared_memory(kunci: bilangan, ukuran: bilangan) -> ptr {
 
 ### LAMPIRAN E: SUMBER DAYA & KOMUNITAS
 * Repositori Utama: `https://github.com/tela-core/tela`
-* Komunitas Telegram: `@telacore_nusantara`
+* Komunitas Telegram: `@telacore_nusantara`[Menyusul]
 * Kontribusi: Laporkan isu kompiler atau ajukan perubahan kode melalui *pull request* repositori.
