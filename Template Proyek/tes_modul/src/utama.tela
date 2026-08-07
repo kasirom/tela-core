@@ -1,0 +1,17 @@
+modul matematika;
+gunakan Sistem::*;
+gunakan matematika::*;
+
+fungsi utama() -> bilangan {
+    cetak_teks("Memanggil tambah(10, 20)\n");
+    ubah hasil_tambah: bilangan = tambah(10, 20);
+    cetak_bilangan(hasil_tambah);
+    cetak_teks("\n");
+    
+    cetak_teks("Memanggil kali(5, 5)\n");
+    ubah hasil_kali: bilangan = kali(5, 5);
+    cetak_bilangan(hasil_kali);
+    cetak_teks("\n");
+    
+    kembalikan 0;
+}

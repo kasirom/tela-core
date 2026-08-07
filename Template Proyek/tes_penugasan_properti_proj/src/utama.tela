@@ -1,0 +1,22 @@
+struktur Pengguna {
+    nama: teks,
+    umur: bilangan,
+}
+
+fungsi utama() {
+    ubah budi = Pengguna {
+        nama: "Budi",
+        umur: 30,
+    };
+    
+    Sistem::cetak_teks("Sebelum ubah:");
+    Sistem::cetak_teks(budi.nama);
+    Sistem::cetak_bilangan(budi.umur);
+    
+    budi.nama = "Budi Santoso";
+    budi.umur = 31;
+    
+    Sistem::cetak_teks("Setelah ubah:");
+    Sistem::cetak_teks(budi.nama);
+    Sistem::cetak_bilangan(budi.umur);
+}

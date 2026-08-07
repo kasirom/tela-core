@@ -1,0 +1,40 @@
+fungsi utama() {
+    ubah v: vektor<bilangan> = vektor_baru<bilangan>();
+    Sistem::cetak_teks("Panjang awal:");
+    Sistem::cetak_bilangan(v.panjang());
+    Sistem::cetak_teks("Kapasitas awal:");
+    Sistem::cetak_bilangan(v.kapasitas());
+    
+    Sistem::cetak_teks("Menambahkan elemen...");
+    v.tambah(100);
+    v.tambah(200);
+    v.tambah(300);
+    v.tambah(400);
+    
+    Sistem::cetak_teks("Panjang setelah tambah 4:");
+    Sistem::cetak_bilangan(v.panjang());
+    Sistem::cetak_teks("Kapasitas:");
+    Sistem::cetak_bilangan(v.kapasitas());
+    
+    // Uji realloc/grow
+    Sistem::cetak_teks("Menambahkan elemen ke-5 (trigger grow):");
+    v.tambah(500);
+    Sistem::cetak_teks("Panjang:");
+    Sistem::cetak_bilangan(v.panjang());
+    Sistem::cetak_teks("Kapasitas baru:");
+    Sistem::cetak_bilangan(v.kapasitas());
+    
+    // Uji baca indeks
+    Sistem::cetak_teks("Elemen-elemen:");
+    Sistem::cetak_bilangan(v[0]);
+    Sistem::cetak_bilangan(v[1]);
+    Sistem::cetak_bilangan(v[2]);
+    Sistem::cetak_bilangan(v[3]);
+    Sistem::cetak_bilangan(v[4]);
+    
+    // Uji tulis indeks
+    Sistem::cetak_teks("Mengubah v[2] menjadi 999...");
+    v[2] = 999;
+    Sistem::cetak_teks("v[2] baru:");
+    Sistem::cetak_bilangan(v[2]);
+}

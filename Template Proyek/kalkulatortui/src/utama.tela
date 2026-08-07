@@ -1,0 +1,186 @@
+// ==================================================
+// MP3 PLAYER TELACORE - KERANGKA DASAR AMAN
+// HANYA PAKAI FITUR YANG SUDAH TERDUKUNG PARSER
+// ==================================================
+gunakan Sistem::*;
+
+// --------------------------
+// Variabel Status Pemutar
+// --------------------------
+ubah status_putar: bilangan = 0; // 0=berhenti, 1=sedang putar, 2=dijeda
+ubah volume: bilangan = 75;
+ubah jalur_lagu: teks = "";
+ubah nama_lagu: teks = "";
+
+// --------------------------
+// Fungsi Tampilan Teks Warna
+// --------------------------
+fungsi baris_judul() -> kosong {
+    cetak_teks("\e[44m\e[37;1m===========================================\e[0m\n");
+    cetak_teks("\e[44m\e[37;1m          PEMUTAR MP3 TELACORE            \e[0m\n");
+    cetak_teks("\e[44m\e[37;1m===========================================\e[0m\n");
+    kembalikan;
+}
+
+fungsi tampilkan_status() -> kosong {
+    cetak_teks("\n📊 STATUS SAAT INI:\n");
+    jika (status_putar == 0) maka {
+        cetak_teks("▶ Status: BERHENTI\n");
+    }
+    lain jika (status_putar == 1) maka {
+        cetak_teks("▶ Status: SEDANG MEMUTAR\n");
+    }
+    lain jika (status_putar == 2) maka {
+        cetak_teks("▶ Status: DIJEDA\n");
+    }
+
+    cetak_teks("🔊 Volume: ");
+    cetak_bilangan(volume);
+    cetak_teks("%\n");
+
+    jika (jalur_lagu != "") maka {
+        cetak_teks("🎵 Lagu: ");
+        cetak_teks(nama_lagu);
+        cetak_teks("\n");
+    }
+    lain {
+        cetak_teks("🎵 Belum ada lagu dimuat\n");
+    }
+    kembalikan;
+}
+
+// --------------------------
+// Fungsi Kendali Dasar
+// --------------------------
+fungsi muat_lagu() -> kosong {
+    cetak_teks("\n📂 Masukkan nama/alamat berkas lagu (.mp3): ");
+    jalur_lagu = baca_baris();
+    nama_lagu = jalur_lagu; // simpan sementara
+    cetak_teks("✅ Lagu berhasil dimuat!\n");
+    status_putar = 0;
+    kembalikan;
+}
+
+fungsi putar_lagu() -> kosong {
+    jika (jalur_lagu == "") maka {
+        cetak_teks("⚠️ Peringatan: Muat lagu terlebih dahulu!\n");
+        kembalikan;
+    }
+
+    jika (status_putar == 2) maka {
+        status_putar = 1;
+        cetak_teks("▶ Melanjutkan pemutaran lagu...\n");
+    }
+    lain {
+        status_putar = 1;
+        cetak_teks("▶ Sedang memutar: ");
+        cetak_teks(nama_lagu);
+        cetak_teks("\n");
+    }
+    kembalikan;
+}
+
+fungsi jeda_lagu() -> kosong {
+    jika (status_putar == 1) maka {
+        status_putar = 2;
+        cetak_teks("⏸ Pemutaran dijeda sementara.\n");
+    }
+    lain {
+        cetak_teks("ℹ️ Tidak ada lagu yang sedang diputar.\n");
+    }
+    kembalikan;
+}
+
+fungsi henti_lagu() -> kosong {
+    status_putar = 0;
+    cetak_teks("⏹ Pemutaran dihentikan kembali ke awal.\n");
+    kembalikan;
+}
+
+fungsi ubah_volume() -> kosong {
+    cetak_teks("\n🔊 Masukkan nilai volume (0 - 100): ");
+    ubah vol_baru: bilangan = baca_bilangan();
+
+    jika (vol_baru >= 0 DAN vol_baru <= 100) maka {
+        volume = vol_baru;
+        cetak_teks("✅ Volume berhasil diubah menjadi: ");
+        cetak_bilangan(volume);
+        cetak_teks("%\n");
+    }
+    lain {
+        cetak_teks("❌ Angka harus antara 0 sampai 100!\n");
+    }
+    kembalikan;
+}
+
+fungsi tampilkan_tentang() -> kosong {
+    cetak_teks("\nℹ️ TENTANG APLIKASI:\n");
+    cetak_teks("Pemutar MP3 sederhana dibuat dengan Bahasa TELACORE\n");
+    cetak_teks("Dikembangkan untuk pembelajaran & latihan pemrograman\n");
+    kembalikan;
+}
+
+// --------------------------
+// Menu Utama & Perulangan
+// --------------------------
+fungsi utama() -> bilangan {
+    ubah berjalan: bilangan = 1;
+    ubah pilihan: bilangan = 0;
+
+    selama (berjalan == 1) {
+        cetak_teks("\e[2J\e[H"); // Bersih layar & pindah kursor ke atas
+        baris_judul();
+        tampilkan_status();
+
+        cetak_teks("\n===== DAFTAR MENU =====\n");
+        cetak_teks("[1] Muat Berkas Lagu\n");
+        cetak_teks("[2] Putar / Lanjutkan\n");
+        cetak_teks("[3] Jeda Sementara\n");
+        cetak_teks("[4] Hentikan Pemutaran\n");
+        cetak_teks("[5] Ubah Tingkat Volume\n");
+        cetak_teks("[6] Tentang Pemutar\n");
+        cetak_teks("[7] Keluar dari Aplikasi\n");
+        cetak_teks("-------------------------\n");
+        cetak_teks("👉 Masukkan pilihan nomor: ");
+
+        pilihan = baca_bilangan();
+
+        // Proses pilihan pengguna
+        jika (pilihan == 1) maka {
+            muat_lagu();
+        }
+        lain jika (pilihan == 2) maka {
+            putar_lagu();
+        }
+        lain jika (pilihan == 3) maka {
+            jeda_lagu();
+        }
+        lain jika (pilihan == 4) maka {
+            henti_lagu();
+        }
+        lain jika (pilihan == 5) maka {
+            ubah_volume();
+        }
+        lain jika (pilihan == 6) maka {
+            tampilkan_tentang();
+        }
+        lain jika (pilihan == 7) maka {
+            cetak_teks("\n👋 Terima kasih sudah menggunakan Pemutar MP3!\n");
+            berjalan = 0;
+        }
+        lain {
+            cetak_teks("\n❌ Pilihan tidak ada! Silakan pilih angka 1-7 saja.\n");
+        }
+
+        // Tunggu tekan tombol sebelum kembali ke menu
+        jika (berjalan == 1) maka {
+            cetak_teks("\n--- Tekan tombol apa saja untuk kembali ke menu ---");
+            baca_tombol();
+        }
+    }
+
+    kembalikan 0;
+}
+
+// Jalankan program utama
+utama();

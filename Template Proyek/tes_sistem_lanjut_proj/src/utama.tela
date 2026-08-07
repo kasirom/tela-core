@@ -1,0 +1,23 @@
+fungsi utama() {
+    ubah x: bilangan = 100;
+    ubah y: bilangan = 0;
+    
+    Sistem::cetak_teks("--- UJI KEAMANAN TELA ---");
+    
+    aman {
+        Sistem::cetak_teks("Mencoba pembagian bilangan dengan nol:");
+        ubah hasil_bilangan = x / y;
+        Sistem::cetak_teks("Hasil pembagian bilangan:");
+        Sistem::cetak_bilangan(hasil_bilangan);
+        Sistem::cetak_teks("");
+        
+        Sistem::cetak_teks("Mencoba pembagian desimal dengan nol:");
+        ubah a: desimal = 50.0;
+        ubah b: desimal = 0.0;
+        ubah hasil_desimal = a / b;
+        Sistem::cetak_teks("Hasil pembagian desimal:");
+        Sistem::cetak_desimal(hasil_desimal);
+    }
+    
+    Sistem::cetak_teks("\n--- PROGRAM SELESAI TANPA CRASH ---");
+}
