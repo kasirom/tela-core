@@ -1024,7 +1024,7 @@ fungsi alokasi_shared_memory(kunci: bilangan, ukuran: bilangan) -> ptr {
 ### LAMPIRAN D: PROYEK LANJUTAN
 1. **Editor Teks Sederhana CLI**: Menggunakan pembacaan ANSI raw-input untuk membuat klon editor Nano/Vim.
 2. **Server Berkas Web (HTTP Server)**: Membaca berkas statis HTML dari disk dan menyajikannya melalui soket TCP port 80.
-3. **Dan masih banyak lagi aplikasi-aplikasi yang akan kita bangun melalui telacore, lebih unggul dari pada Bahasa ZORA Kami.
+3. **Contoh Proyek Dan Hasil Test Ada di : https://github.com/kasirom/tela-core/tree/main/Template%20Proyek
 
 ### LAMPIRAN E: SUMBER DAYA & KOMUNITAS
 * Repositori Utama: `https://github.com/tela-core/tela`
