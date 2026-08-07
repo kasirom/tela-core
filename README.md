@@ -588,7 +588,7 @@ Hasil Dari Kode Calculator TUI Telacore [Input Dari Mouse, Keyboard, Ada Suara B
 ---
 <img width="546" height="519" alt="Calculator TUI Front" src="https://github.com/user-attachments/assets/915bfc00-c526-477e-a8bf-7b583494fd74" />
 
-Jika Tekan "Shift+?" Akan Memunculkan TUI Menu Bantuan dan Cara Menggunakan Calculatore Telacore
+Jika Tekan "Shift+?" Akan Memunculkan TUI Menu Bantuan dan Cara Menggunakan Calculator Telacore
 ---
 <img width="571" height="423" alt="Calculator TUI Help" src="https://github.com/user-attachments/assets/a773f67b-0962-4185-b673-ea7dcb72da78" />
 
