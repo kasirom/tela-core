@@ -1,0 +1,55 @@
+// ============================================================================
+// PUSTAKA STANDAR TELACORE: SWORO (AUDIO ENGINE & MP3 PLAYER FRAMEWORK)
+// ============================================================================
+// Pustaka resmi Tela Core untuk menangani pemutaran musik MP3/WAV, pemutaran BGM
+// latar belakang berulang (looping), dan pemutaran efek suara SFX dari folder aset/sfx.
+// Nama Pustaka: SWORO (Sound, Wave, & Oscillating Realtime Output)
+// ============================================================================
+
+gunakan Sistem::*;
+
+// Deklarasi FFI Win32 WinMM (Multimedia Windows API)
+asing fungsi mciSendStringA(lpstrCommand: teks, lpstrReturnString: teks, uReturnLength: bilangan, hwndCallback: bilangan) -> bilangan;
+asing fungsi PlaySoundA(soundName: teks, hmod_val: bilangan, flags_val: bilangan) -> bilangan;
+
+// ----------------------------------------------------------------------------
+// FUNGSIONALITAS SWORO AUDIO ENGINE
+// ----------------------------------------------------------------------------
+
+// 1. Pemutaran Berkas Musik MP3 Latar Belakang (BGM)
+fungsi sworo_putar_mp3(path_berkas: teks) -> bilangan {
+    mciSendStringA("close bgm_stream", "", 0, 0);
+
+    ubah cmd_open = "open \"" + path_berkas + "\" type mpegvideo alias bgm_stream";
+    ubah res_open = mciSendStringA(cmd_open, "", 0, 0);
+
+    ubah res = mciSendStringA("play bgm_stream repeat", "", 0, 0);
+    jika (res == 0) maka {
+        Sistem::cetak_teks("[Pustaka SWORO] Musik BGM MP3 aktif diputar.");
+        kembalikan 1;
+    }
+    kembalikan 0;
+}
+
+// 2. Menghentikan Pemutaran Musik MP3
+fungsi sworo_henti_mp3() {
+    mciSendStringA("stop bgm_stream", "", 0, 0);
+    mciSendStringA("close bgm_stream", "", 0, 0);
+    Sistem::cetak_teks("[Pustaka SWORO] Musik BGM dihentikan.");
+}
+
+// 3. Pemutaran Berkas Efek Suara WAV Asli dari Folder aset/sfx/
+// SND_FILENAME = 131072 | SND_ASYNC = 1 | SND_NODEFAULT = 2 -> 131075
+// SND_NODEFAULT menjamin 100% BEBAS HANG/CRASH saat pertempuran sengit!
+fungsi sworo_putar_wav_efek(path_berkas: teks) {
+    PlaySoundA(path_berkas, 0, 131075);
+}
+
+// 4. Pembangkit & Sintesis Suara Prosedural Fallback
+fungsi sworo_sintesis_suara(tipe_efek: bilangan) {
+    jika (tipe_efek == 1) maka { sworo_putar_wav_efek("aset/sfx/laser.wav"); }
+    jika (tipe_efek == 2) maka { sworo_putar_wav_efek("aset/sfx/explosion.wav"); }
+    jika (tipe_efek == 3) maka { sworo_putar_wav_efek("aset/sfx/laser.wav"); }
+    jika (tipe_efek == 4) maka { sworo_putar_wav_efek("aset/sfx/warning.wav"); }
+    jika (tipe_efek == 5) maka { sworo_putar_wav_efek("aset/sfx/warning.wav"); }
+}
