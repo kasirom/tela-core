@@ -1,0 +1,6 @@
+[proyek]
+nama = "game_demo"
+versi = "0.1.0"
+entry = "src/main.tela"
+
+[ketergantungan]

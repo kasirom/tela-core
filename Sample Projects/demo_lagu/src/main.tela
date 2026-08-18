@@ -1,0 +1,54 @@
+gunakan Sistem::*;
+gunakan Suara::*;
+gunakan Benang::*;
+gunakan Warna::*;
+
+fungsi utama() {
+    Sistem::cetak_teks(Warna::tebal(Warna::sian("🎵 === PEMUTAR NADA MELODI TELACORE === 🎵")));
+    Sistem::cetak_teks("Memainkan tangga nada Do - Re - Mi - Fa - Sol - La - Si - Do...");
+    Sistem::cetak_baris();
+
+    // Frekuensi Tangga Nada Standar (Hz)
+    ubah NADA_DO = 261;
+    ubah NADA_RE = 294;
+    ubah NADA_MI = 329;
+    ubah NADA_FA = 349;
+    ubah NADA_SOL = 392;
+    ubah NADA_LA = 440;
+    ubah NADA_SI = 493;
+    ubah NADA_DO_TINGGI = 523;
+
+    Sistem::cetak_teks("🎶 Do (261 Hz)");
+    Suara::putar_nada(NADA_DO, 300);
+    Benang::tunda(50);
+
+    Sistem::cetak_teks("🎶 Re (294 Hz)");
+    Suara::putar_nada(NADA_RE, 300);
+    Benang::tunda(50);
+
+    Sistem::cetak_teks("🎶 Mi (329 Hz)");
+    Suara::putar_nada(NADA_MI, 300);
+    Benang::tunda(50);
+
+    Sistem::cetak_teks("🎶 Fa (349 Hz)");
+    Suara::putar_nada(NADA_FA, 300);
+    Benang::tunda(50);
+
+    Sistem::cetak_teks("🎶 Sol (392 Hz)");
+    Suara::putar_nada(NADA_SOL, 300);
+    Benang::tunda(50);
+
+    Sistem::cetak_teks("🎶 La (440 Hz)");
+    Suara::putar_nada(NADA_LA, 300);
+    Benang::tunda(50);
+
+    Sistem::cetak_teks("🎶 Si (493 Hz)");
+    Suara::putar_nada(NADA_SI, 300);
+    Benang::tunda(50);
+
+    Sistem::cetak_teks("🎶 Do Tinggi (523 Hz)");
+    Suara::putar_nada(NADA_DO_TINGGI, 600);
+
+    Sistem::cetak_baris();
+    Sistem::cetak_teks(Warna::hijau("✨ Melodi selesai dimainkan!"));
+}

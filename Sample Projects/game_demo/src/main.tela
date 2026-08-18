@@ -1,0 +1,18 @@
+gunakan Sistem::*;
+gunakan Matematika::*;
+
+fungsi utama() {
+    Sistem::cetak_teks("=== MINI GAME PETUALANGAN TELACORE ===");
+    ubah nyawa = 100;
+    ubah skor = 0;
+    ubah posisi_x = 5;
+
+    Sistem::cetak_teks("Nyawa awal: 100 | Posisi pemain: 5");
+    Sistem::cetak_teks("Bergerak maju (+2 langkah)...");
+    posisi_x = posisi_x + 2;
+    skor = skor + 50;
+
+    Sistem::cetak_teks("Selamat! Anda menemukan harta karun!");
+    Sistem::cetak_bilangan(skor);
+    Sistem::cetak_teks("Program mini game berjalan sukses!");
+}

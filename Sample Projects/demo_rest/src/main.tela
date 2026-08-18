@@ -1,0 +1,31 @@
+gunakan Sistem::*;
+gunakan Warna::*;
+gunakan Jaringan::*;
+gunakan JSON::*;
+gunakan Kripto::*;
+gunakan Konversi::*;
+
+fungsi utama() {
+    Sistem::cetak_teks(Warna::tebal(Warna::sian("🌐 === KLIEN REST API & JSON TELACORE === 🌐")));
+    Sistem::cetak_baris();
+    
+    ubah url = "https://httpbin.org/get";
+    Sistem::cetak_teks(Warna::kuning("📡 Mengirim HTTP GET ke: ") + url);
+    
+    ubah respon = Jaringan::ambil_http(url);
+    
+    jika respon == "" {
+        Sistem::cetak_teks(Warna::merah("❌ Gagal terhubung ke jaringan atau server offline."));
+    } lainnya {
+        Sistem::cetak_teks(Warna::hijau("✅ Respon HTTP Diterima:"));
+        Sistem::cetak_teks(respon);
+        
+        Sistem::cetak_baris();
+        Sistem::cetak_teks(Warna::sian("🔐 Informasi Keamanan & Hash:"));
+        ubah hash = Kripto::hash_djb2(respon);
+        Sistem::cetak_teks("  DJB2 Hash : " + Konversi::bilangan_ke_teks(hash));
+        
+        ubah hex_val = Kripto::hex_encode("TelaCore Rest Client");
+        Sistem::cetak_teks("  Header Hex: " + hex_val);
+    }
+}
