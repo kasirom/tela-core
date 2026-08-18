@@ -1,8 +1,0 @@
-// matematika.tela
-publik fungsi tambah(a: bilangan, b: bilangan) -> bilangan {
-    kembalikan a + b;
-}
-
-publik fungsi kali(a: bilangan, b: bilangan) -> bilangan {
-    kembalikan a * b;
-}
