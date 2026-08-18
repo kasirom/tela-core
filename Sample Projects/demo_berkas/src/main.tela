@@ -1,0 +1,49 @@
+gunakan Sistem::*;
+gunakan Warna::*;
+gunakan Berkas::*;
+gunakan Konversi::*;
+
+fungsi utama() {
+    Sistem::cetak_teks(Warna::tebal(Warna::sian("📁 === UTILITAS SISTEM BERKAS & OS TELACORE === 📁")));
+    Sistem::cetak_baris();
+    
+    Sistem::cetak_teks(Warna::kuning("🖥️  Informasi Sistem Operasi:"));
+    Sistem::cetak_teks("  OS         : " + Sistem::nama_os());
+    Sistem::cetak_teks("  Arsitektur : " + Sistem::arsitektur());
+    Sistem::cetak_teks("  Uptime (ms): " + Konversi::bilangan_ke_teks(Sistem::waktu_milidetik()));
+    Sistem::cetak_baris();
+    
+    ubah folder = "data_uji";
+    ubah file_asal = "data_uji/catatan.txt";
+    ubah file_salin = "data_uji/catatan_backup.txt";
+    
+    Sistem::cetak_teks(Warna::kuning("📂 Mengelola Folder & File:"));
+    
+    // 1. Buat folder
+    jika Berkas::buat_direktori(folder) {
+        Sistem::cetak_teks(Warna::hijau("  ✅ Folder '" + folder + "' berhasil dibuat."));
+    } lainnya {
+        Sistem::cetak_teks("  ℹ️  Folder '" + folder + "' sudah ada.");
+    }
+    
+    // 2. Tulis File
+    ubah fp = Berkas::buka_file(file_asal, "w");
+    Berkas::tulis_teks(fp, "Halo dari TelaCore File Manager!\nBaris kedua data teks.\n");
+    Berkas::tutup_file(fp);
+    Sistem::cetak_teks(Warna::hijau("  ✅ Berkas '" + file_asal + "' berhasil ditulis."));
+    
+    // 3. Cek Ukuran File
+    ubah ukuran = Berkas::ukuran_file(file_asal);
+    Sistem::cetak_teks("  📊 Ukuran berkas: " + Konversi::bilangan_ke_teks(ukuran) + " bytes");
+    
+    // 4. Salin File
+    jika Berkas::salin_file(file_asal, file_salin) {
+        Sistem::cetak_teks(Warna::hijau("  ✅ Berkas berhasil disalin ke '" + file_salin + "'."));
+    }
+    
+    // 5. Baca Semua Isi
+    ubah isi = Berkas::baca_semua(file_salin);
+    Sistem::cetak_baris();
+    Sistem::cetak_teks(Warna::sian("📄 Isi Berkas Salinan:"));
+    Sistem::cetak_teks(isi);
+}
