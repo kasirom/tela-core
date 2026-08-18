@@ -1,0 +1,63 @@
+// ============================================================================
+// TELASOUND: ADVANCED AUDIO ENGINE
+// ============================================================================
+
+impor "../modul/sworo.tela";
+gunakan Sistem::*;
+
+// Deklarasi tambahan MCI
+luar fungsi mciSendStringA(lpstrCommand: teks, lpstrReturnString: teks, uReturnLength: bilangan, hwndCallback: bilangan) -> bilangan;
+
+fungsi telasound_audio_inisialisasi() {
+    Sistem::cetak_teks("[TelaSound Audio Engine] Inisialisasi Berhasil.");
+}
+
+fungsi telasound_audio_matikan() {
+    sworo_henti_mp3();
+}
+
+fungsi telasound_audio_putar(path_lagu: teks) {
+    sworo_putar_mp3(path_lagu);
+}
+
+fungsi telasound_audio_putar_media(path_lagu: teks, hwnd: bilangan) {
+    sworo_putar_media(path_lagu, hwnd);
+}
+
+fungsi telasound_audio_jeda(status_bermain: bilangan) -> bilangan {
+    jika (status_bermain == 1) maka {
+        mciSendStringA("pause bgm_stream", "", 0, 0);
+        kembalikan 2;
+    } lainnya jika (status_bermain == 2) maka {
+        mciSendStringA("resume bgm_stream", "", 0, 0);
+        kembalikan 1;
+    }
+    kembalikan status_bermain;
+}
+
+fungsi telasound_audio_hentikan() {
+    sworo_henti_mp3();
+}
+
+// Simulasi Data Spektrum (MCI tidak mendukung FFT secara native, kita pakai PRNG sederhana)
+// Mengembalikan intensitas bass (0 - 100)
+fungsi telasound_audio_dapatkan_bass(frame_count: bilangan, status_bermain: bilangan) -> bilangan {
+    jika (status_bermain != 1) maka { kembalikan 0; }
+    // Simulasi bass memuncak pada ketukan tertentu
+    ubah sisa = frame_count - ((frame_count / 30) * 30);
+    jika (sisa < 5) maka {
+        kembalikan 80 + (sisa * 3);
+    }
+    kembalikan 30 + sisa;
+}
+
+// Mengembalikan intensitas treble (0 - 100)
+fungsi telasound_audio_dapatkan_treble(frame_count: bilangan, status_bermain: bilangan) -> bilangan {
+    jika (status_bermain != 1) maka { kembalikan 0; }
+    ubah sisa = frame_count - ((frame_count / 12) * 12);
+    kembalikan 20 + (sisa * 5);
+}
+
+fungsi telasound_audio_update_crossfade() {
+    // Simulasi logika deteksi akhir lagu
+}

@@ -1,0 +1,51 @@
+// ============================================================================
+// MODUL GRAFIK & GUI TELACORE (ALIAS KE PUSTAKA WEDUS & GEMBUS)
+// ============================================================================
+// Berkas modul/grafik.tela ini menghubungkan pemanggilan grafik lama ke pustaka
+// standar resmi WEDUS (GUI Framework) dan GEMBUS (Game Engine).
+// ============================================================================
+
+impor "modul/wedus.tela";
+impor "modul/gembus.tela";
+
+gunakan Sistem::*;
+
+fungsi grafik_buat_jendela(judul: teks, lebar: bilangan, tinggi: bilangan) -> bilangan {
+    kembalikan wedus_buat_jendela(judul, lebar, tinggi);
+}
+
+fungsi grafik_gambar_titik(hwnd: bilangan, x: bilangan, y: bilangan, warna_rgb: bilangan) {
+    wedus_gambar_kotak(hwnd, x, y, x + 1, y + 1, warna_rgb);
+}
+
+fungsi grafik_gambar_garis(hwnd: bilangan, x1: bilangan, y1: bilangan, x2: bilangan, y2: bilangan, warna_rgb: bilangan, tebal: bilangan) {
+    wedus_gambar_garis(hwnd, x1, y1, x2, y2, warna_rgb, tebal);
+}
+
+fungsi grafik_gambar_kotak(hwnd: bilangan, x1: bilangan, y1: bilangan, x2: bilangan, y2: bilangan, warna_rgb: bilangan) {
+    wedus_gambar_kotak(hwnd, x1, y1, x2, y2, warna_rgb);
+}
+
+fungsi grafik_gambar_lingkaran(hwnd: bilangan, cx: bilangan, cy: bilangan, radius: bilangan, warna_rgb: bilangan) {
+    wedus_gambar_lingkaran(hwnd, cx, cy, radius, warna_rgb);
+}
+
+fungsi grafik_tulis_teks(hwnd: bilangan, x: bilangan, y: bilangan, isi: teks) {
+    wedus_tulis_teks(hwnd, x, y, isi);
+}
+
+fungsi grafik_bersihkan(hwnd: bilangan, lebar: bilangan, tinggi: bilangan, warna_rgb: bilangan) {
+    wedus_bersihkan_layar(hwnd, lebar, tinggi, warna_rgb);
+}
+
+fungsi grafik_proses_kejadian() -> bilangan {
+    kembalikan wedus_proses_kejadian();
+}
+
+fungsi grafik_muat_bitmap(path_berkas: teks, cx: bilangan, cy: bilangan) -> bilangan {
+    kembalikan gembus_muat_gambar(path_berkas, cx, cy);
+}
+
+fungsi grafik_gambar_bitmap(hwnd: bilangan, hbitmap: bilangan, x: bilangan, y: bilangan, w: bilangan, h: bilangan) {
+    gembus_gambar_sprite(hwnd, hbitmap, x, y, w, h);
+}

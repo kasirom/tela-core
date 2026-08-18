@@ -1,0 +1,86 @@
+// ============================================================================
+// TELASOUND: DIALOG BERKAS & MANAJER PLAYLIST
+// ============================================================================
+
+luar fungsi dialog_buka_berkas(hwnd_parent: bilangan) -> teks;
+luar fungsi dialog_buka_folder(hwnd_parent: bilangan) -> teks;
+luar fungsi dialog_buat_jendela_native(judul: teks, lebar: bilangan, tinggi: bilangan) -> bilangan;
+luar fungsi proses_kejadian_c() -> bilangan;
+
+// C-Backend Mouse Tracking
+luar fungsi dapat_mouse_x(hwnd: bilangan) -> bilangan;
+luar fungsi dapat_mouse_y(hwnd: bilangan) -> bilangan;
+
+// C-Backend Playlist Manager
+luar fungsi playlist_tambah(path: teks);
+luar fungsi playlist_tambah_ke_grup(path: teks, id_grup: bilangan);
+luar fungsi playlist_simpan();
+luar fungsi playlist_muat();
+luar fungsi playlist_jumlah() -> bilangan;
+luar fungsi playlist_dapat_path(index: bilangan) -> teks;
+luar fungsi playlist_dapat_judul(index: bilangan) -> teks;
+luar fungsi playlist_hapus(index: bilangan);
+luar fungsi playlist_bersihkan();
+
+luar fungsi dapat_lebar_jendela(hwnd: bilangan) -> bilangan;
+luar fungsi dapat_tinggi_jendela(hwnd: bilangan) -> bilangan;
+luar fungsi format_durasi(ms: bilangan) -> teks;
+luar fungsi dialog_set_tema(tema: bilangan);
+
+// C-Backend Mouse Scroll
+luar fungsi inisialisasi_scroll(hwnd: bilangan);
+luar fungsi dapat_scroll_delta() -> bilangan;
+
+// C-Backend Double Buffering
+luar fungsi wedus_mulai_render(hwnd: bilangan, w: bilangan, h: bilangan);
+luar fungsi wedus_selesai_render(hwnd: bilangan, w: bilangan, h: bilangan);
+
+// C-Backend Fixer
+luar fungsi dialog_set_background_hitam(hwnd: bilangan);
+luar fungsi jendela_aktif(hwnd: bilangan) -> bilangan;
+
+// C-Backend Equalizer UI
+luar fungsi eq_dapat(index: bilangan) -> bilangan;
+luar fungsi eq_set(index: bilangan, val: bilangan);
+luar fungsi eq_set_preset(preset_id: bilangan);
+
+// C-Backend Visualizer Engine
+luar fungsi vis_update(is_playing: bilangan);
+luar fungsi vis_dapat_bar(index: bilangan) -> bilangan;
+luar fungsi vis_dapat_peak(index: bilangan) -> bilangan;
+
+// C-Backend GDI Flush
+luar fungsi gdi_paksa_render();
+
+// C-Backend Audio Controls
+luar fungsi audio_kontrol_jeda();
+luar fungsi audio_kontrol_lanjut();
+luar fungsi audio_kontrol_henti();
+luar fungsi audio_kontrol_volume(vol: bilangan);
+luar fungsi audio_kontrol_geser(pos_ms: bilangan);
+luar fungsi audio_dapat_posisi() -> bilangan;
+luar fungsi audio_dapat_durasi() -> bilangan;
+luar fungsi audio_status_bermain() -> bilangan;
+
+// C-Backend Window Patcher (Resize limit)
+luar fungsi dialog_patch_window(hwnd: bilangan);
+luar fungsi teks_ambil_baris(input: teks, max_len: bilangan, baris_ke: bilangan) -> teks;
+luar fungsi dialog_simpan_berkas(hwnd_parent: bilangan) -> teks;
+luar fungsi playlist_simpan_ke_path(custom_path: teks);
+luar fungsi playlist_muat_dari_path(custom_path: teks);
+luar fungsi dialog_buka_playlist(hwnd_parent: bilangan) -> teks;
+luar fungsi audio_set_kecepatan(speed_per_1000: bilangan);
+luar fungsi audio_lompat_posisi(delta_detik: bilangan);
+
+fungsi dialog_buka_media(hwnd: bilangan) -> teks {
+    kembalikan dialog_buka_berkas(hwnd);
+}
+
+// UI State
+luar fungsi dialog_dapat_pohon_lebar() -> bilangan;
+luar fungsi dialog_set_pohon_lebar(w: bilangan);
+luar fungsi dialog_dapat_eq_lebar() -> bilangan;
+luar fungsi dialog_set_eq_lebar(w: bilangan);
+luar fungsi dialog_dapat_layout() -> bilangan;
+luar fungsi dialog_set_layout(l: bilangan);
+luar fungsi dialog_set_cursor_type(type: bilangan);

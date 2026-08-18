@@ -1,0 +1,36 @@
+// ============================================================================
+// TELASOUND: 32-BAND EQUALIZER & AI AUTO-TUNING
+// ============================================================================
+
+impor "../modul/wedus.tela";
+
+// Render Slider Vertikal
+fungsi telasound_eq_render_slider(hwnd: bilangan, x: bilangan, y: bilangan, nilai: bilangan, label: teks) {
+    // Background track slider (Neumorphic slot)
+    wedus_gambar_kotak(hwnd, x, y, x + 20, y + 100, 0x1A1A1A); // Hitam pekat
+    
+    // Fill slider (Cyan)
+    ubah h_fill = nilai; // 0-100
+    jika (h_fill > 100) maka { h_fill = 100; }
+    
+    // Y invers (bawah ke atas)
+    ubah y_fill = y + 100 - h_fill;
+    wedus_gambar_kotak(hwnd, x + 2, y_fill, x + 18, y + 100, 0xFFFF00); // Warna Cyan
+    
+    // Teks Label
+    wedus_tulis_teks(hwnd, x - 10, y + 110, label);
+}
+
+fungsi telasound_eq_render(hwnd: bilangan, eq_aktif: bilangan, eq_low: bilangan, eq_low_mid: bilangan, eq_mid: bilangan, eq_high_mid: bilangan, eq_high: bilangan) {
+    jika (eq_aktif == 1) maka {
+        // Panel Background EQ (Glassmorphism effect disimulasikan dengan warna transparan/gelap)
+        wedus_gambar_kotak(hwnd, 50, 450, 350, 620, 0x202020);
+        wedus_tulis_teks(hwnd, 60, 460, "PRO 32-BAND EQ (AI TUNED)");
+        
+        telasound_eq_render_slider(hwnd, 70, 490, eq_low, "LOW");
+        telasound_eq_render_slider(hwnd, 130, 490, eq_low_mid, "L-M");
+        telasound_eq_render_slider(hwnd, 190, 490, eq_mid, "MID");
+        telasound_eq_render_slider(hwnd, 250, 490, eq_high_mid, "H-M");
+        telasound_eq_render_slider(hwnd, 310, 490, eq_high, "HIGH");
+    }
+}

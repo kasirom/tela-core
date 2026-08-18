@@ -1,0 +1,629 @@
+// ============================================================================
+// TELASOUNDMEDIA: FULL GUI & MENU SYSTEM (MediaMonkey Layout)
+// ============================================================================
+
+impor "../modul/wedus.tela";
+impor "../modul/gembus.tela";
+impor "../modul/dialog.tela";
+
+// --- Theme Helper Functions ---
+fungsi tema_bg_utama(tema: bilangan) -> bilangan {
+    jika (tema == 1) maka { kembalikan 0xEEEEEE; } // Light
+    jika (tema == 2) maka { kembalikan 0x050505; } // Hacker
+    jika (tema == 3) maka { kembalikan 0xEECCDD; } // Romantis (Pink/Rose)
+    jika (tema == 4) maka { kembalikan 0x77EEFF; } // Anak-anak (Sky Blue)
+    jika (tema == 5) maka { kembalikan 0x1A0515; } // Cyberpunk (Deep Purple)
+    jika (tema == 6) maka { kembalikan 0x101A10; } // Ambient (Deep Forest)
+    jika (tema == 7) maka { kembalikan 0x0A051A; } // Mistery (Deep Void)
+    jika (tema == 8) maka { kembalikan 0x051A2A; } // Aquatic (Deep Ocean)
+    kembalikan 0x181818; // Dark (Default 0)
+}
+fungsi tema_bg_panel(tema: bilangan) -> bilangan {
+    jika (tema == 1) maka { kembalikan 0xDDDDDD; } // Light
+    jika (tema == 2) maka { kembalikan 0x0A0A0A; } // Hacker
+    jika (tema == 3) maka { kembalikan 0xDD99AA; } // Romantis
+    jika (tema == 4) maka { kembalikan 0x44CCFF; } // Anak-anak
+    jika (tema == 5) maka { kembalikan 0x2A0520; } // Cyberpunk
+    jika (tema == 6) maka { kembalikan 0x1A2A1A; } // Ambient
+    jika (tema == 7) maka { kembalikan 0x120A2A; } // Mistery
+    jika (tema == 8) maka { kembalikan 0x0A2233; } // Aquatic
+    kembalikan 0x22201F; // Dark
+}
+fungsi tema_bg_menu(tema: bilangan) -> bilangan {
+    jika (tema == 1) maka { kembalikan 0xCCCCCC; } // Light
+    jika (tema == 2) maka { kembalikan 0x111111; } // Hacker
+    jika (tema == 3) maka { kembalikan 0xCC7788; } // Romantis
+    jika (tema == 4) maka { kembalikan 0x22AAFF; } // Anak-anak
+    jika (tema == 5) maka { kembalikan 0x150010; } // Cyberpunk
+    jika (tema == 6) maka { kembalikan 0x0A100A; } // Ambient
+    jika (tema == 7) maka { kembalikan 0x05020F; } // Mistery
+    jika (tema == 8) maka { kembalikan 0x02111A; } // Aquatic
+    kembalikan 0x252525; // Dark
+}
+fungsi tema_teks_utama(tema: bilangan) -> bilangan {
+    jika (tema == 1) maka { kembalikan 0x111111; } // Light
+    jika (tema == 2) maka { kembalikan 0x00FF00; } // Hacker (Green)
+    jika (tema == 3) maka { kembalikan 0x330011; } // Romantis
+    jika (tema == 4) maka { kembalikan 0x000000; } // Anak-anak
+    jika (tema == 5) maka { kembalikan 0x00FFFF; } // Cyberpunk (Cyan)
+    jika (tema == 6) maka { kembalikan 0x99FFAA; } // Ambient (Soft Green)
+    jika (tema == 7) maka { kembalikan 0xAA88FF; } // Mistery (Pale Purple)
+    jika (tema == 8) maka { kembalikan 0x88EEFF; } // Aquatic (Aqua)
+    kembalikan 0xFFFFFF; // Dark
+}
+fungsi tema_teks_redup(tema: bilangan) -> bilangan {
+    jika (tema == 1) maka { kembalikan 0x555555; } // Light
+    jika (tema == 2) maka { kembalikan 0x008800; } // Hacker
+    jika (tema == 3) maka { kembalikan 0x662233; } // Romantis
+    jika (tema == 4) maka { kembalikan 0x333333; } // Anak-anak
+    jika (tema == 5) maka { kembalikan 0xAA00AA; } // Cyberpunk
+    jika (tema == 6) maka { kembalikan 0x448844; } // Ambient
+    jika (tema == 7) maka { kembalikan 0x553377; } // Mistery
+    jika (tema == 8) maka { kembalikan 0x227799; } // Aquatic
+    kembalikan 0xAAAAAA; // Dark
+}
+fungsi tema_sorot(tema: bilangan) -> bilangan {
+    jika (tema == 1) maka { kembalikan 0x00A5FF; } // Light (Orange BGR)
+    jika (tema == 2) maka { kembalikan 0x00FF00; } // Hacker (Green)
+    jika (tema == 3) maka { kembalikan 0x5555FF; } // Romantis (Reddish/Pink BGR)
+    jika (tema == 4) maka { kembalikan 0x00D7FF; } // Anak-anak (Yellow BGR)
+    jika (tema == 5) maka { kembalikan 0xFF00FF; } // Cyberpunk (Magenta BGR)
+    jika (tema == 6) maka { kembalikan 0x22FF66; } // Ambient (Neon Green)
+    jika (tema == 7) maka { kembalikan 0x8800FF; } // Mistery (Violet)
+    jika (tema == 8) maka { kembalikan 0xEE7700; } // Aquatic (Deep Cyan BGR -> Blue-ish)
+    kembalikan 0xD77800; // Dark (Blue BGR)
+}
+
+fungsi telasound_gui_inisialisasi(judul: teks, lebar: bilangan, tinggi: bilangan) -> bilangan {
+    ubah hwnd = gembus_inisialisasi_layar(judul, lebar, tinggi);
+    jika (hwnd != 0) maka {
+        dialog_set_background_hitam(hwnd); // Fix White Background Bug
+        dialog_patch_window(hwnd); // Fix resize bug
+    }
+    kembalikan hwnd;
+}
+
+// Pseudo-Random number generator based on frame
+fungsi pseudo_random(seed: bilangan) -> bilangan {
+    ubah val = (seed * 1103515245 + 12345) / 65536;
+    jika (val < 0) maka { val = val * -1; }
+    kembalikan val;
+}
+
+fungsi telasound_gui_render_latar(hwnd: bilangan, lebar: bilangan, tinggi: bilangan, menu_terbuka: bilangan, tema: bilangan, fc: bilangan, is_playing: bilangan, tampil_eq: bilangan, tree_pemutaran: bilangan, tree_musik: bilangan, tree_klasik: bilangan, tree_siniar: bilangan, tree_playlist: bilangan, judul_lagu: teks, dur_ms: bilangan, mx: bilangan, my: bilangan, tree_scroll: bilangan, ts_efek_aktif: bilangan) {
+    ubah bg_utama = tema_bg_utama(tema);
+
+    // Layout State Initialization
+
+
+    ubah pw = dialog_dapat_pohon_lebar();
+    ubah eq_w = dialog_dapat_eq_lebar();
+    ubah ts_layout = dialog_dapat_layout();
+    jika (ts_layout == 1) maka { pw = 0; eq_w = 350; }
+    jika (ts_layout == 3) maka { eq_w = 0; }
+
+    ubah bg_panel = tema_bg_panel(tema);
+    ubah bg_menu = tema_bg_menu(tema);
+    ubah teks_putih = tema_teks_utama(tema);
+    ubah teks_abu = tema_teks_redup(tema);
+    ubah c_sorot = tema_sorot(tema);
+    
+    // Latar belakang utama aplikasi
+    wedus_bersihkan_layar(hwnd, lebar, tinggi, bg_utama);
+    
+    // 1. Panel Kiri (Media Tree)
+    jika (pw > 0) maka {
+
+    wedus_gambar_kotak(hwnd, 0, 40, pw, tinggi - 80, bg_panel);
+    wedus_gambar_bingkai(hwnd, 0, 40, pw, tinggi - 80, c_sorot, 1);
+    wedus_tulis_teks_warna(hwnd, 10, 55, "Pohon Media", teks_abu);
+    wedus_gambar_garis(hwnd, 0, 80, pw, 80, c_sorot, 1);
+    
+    ubah y_tree = 85 - tree_scroll;
+    
+    // Pemutaran Saat Ini
+    jika (mx >= 10 && mx <= pw - 10 && my >= y_tree - 3 && my <= y_tree + 20 && y_tree >= 80 && y_tree <= tinggi - 80 && menu_terbuka == 0) maka { wedus_gambar_kotak(hwnd, 10, y_tree - 3, pw - 10, y_tree + 20, c_sorot); }
+    jika (y_tree >= 80 && y_tree <= tinggi - 80) maka {
+        jika (tree_pemutaran == 1) maka { wedus_tulis_teks_warna(hwnd, 20, y_tree, "v Pemutaran Saat Ini", c_sorot); } lainnya { wedus_tulis_teks_warna(hwnd, 20, y_tree, "> Pemutaran Saat Ini", teks_putih); }
+    }
+    y_tree = y_tree + 30;
+    jika (tree_pemutaran == 1) maka {
+        ubah b1 = teks_ambil_baris(judul_lagu, 23, 0);
+        ubah b2 = teks_ambil_baris(judul_lagu, 23, 1);
+        ubah b3 = teks_ambil_baris(judul_lagu, 23, 2);
+        jika (y_tree >= 80 && y_tree <= tinggi - 80) maka { wedus_tulis_teks_warna(hwnd, 35, y_tree, "- File: " + b1, teks_abu); } y_tree = y_tree + 20;
+        jika (Teks::kosong(b2)) maka {} lainnya { jika (y_tree >= 80 && y_tree <= tinggi - 80) maka { wedus_tulis_teks_warna(hwnd, 35, y_tree, "  " + b2, teks_abu); } y_tree = y_tree + 20; }
+        jika (Teks::kosong(b3)) maka {} lainnya { jika (y_tree >= 80 && y_tree <= tinggi - 80) maka { wedus_tulis_teks_warna(hwnd, 35, y_tree, "  " + b3, teks_abu); } y_tree = y_tree + 20; }
+        jika (y_tree >= 80 && y_tree <= tinggi - 80) maka { wedus_tulis_teks_warna(hwnd, 35, y_tree, "- Durasi: " + format_durasi(dur_ms), teks_abu); } y_tree = y_tree + 20;
+        jika (y_tree >= 80 && y_tree <= tinggi - 80) maka { wedus_tulis_teks_warna(hwnd, 35, y_tree, "- Genre: Audio Media", teks_abu); } y_tree = y_tree + 25;
+    }
+    
+    // Musik
+    jika (mx >= 10 && mx <= pw - 10 && my >= y_tree - 3 && my <= y_tree + 20 && y_tree >= 80 && y_tree <= tinggi - 80 && menu_terbuka == 0) maka { wedus_gambar_kotak(hwnd, 10, y_tree - 3, pw - 10, y_tree + 20, c_sorot); }
+    jika (y_tree >= 80 && y_tree <= tinggi - 80) maka {
+        jika (tree_musik == 1) maka { wedus_tulis_teks_warna(hwnd, 20, y_tree, "v Musik", c_sorot); } lainnya { wedus_tulis_teks_warna(hwnd, 20, y_tree, "> Musik", teks_putih); }
+    }
+    y_tree = y_tree + 30;
+    jika (tree_musik == 1) maka {
+        jika (mx >= 30 && mx <= pw - 20 && my >= y_tree - 3 && my <= y_tree + 16 && y_tree >= 80 && y_tree <= tinggi - 80 && menu_terbuka == 0) maka { wedus_gambar_kotak(hwnd, 30, y_tree - 3, pw - 20, y_tree + 16, c_sorot); }
+        jika (y_tree >= 80 && y_tree <= tinggi - 80) maka { wedus_tulis_teks_warna(hwnd, 40, y_tree, "- Semua Musik", teks_abu); } y_tree = y_tree + 20;
+        jika (mx >= 30 && mx <= pw - 20 && my >= y_tree - 3 && my <= y_tree + 16 && y_tree >= 80 && y_tree <= tinggi - 80 && menu_terbuka == 0) maka { wedus_gambar_kotak(hwnd, 30, y_tree - 3, pw - 20, y_tree + 16, c_sorot); }
+        jika (y_tree >= 80 && y_tree <= tinggi - 80) maka { wedus_tulis_teks_warna(hwnd, 40, y_tree, "- Favorit", teks_abu); } y_tree = y_tree + 25;
+    }
+    
+        // Musik Klasik
+    jika (mx >= 10 && mx <= pw - 10 && my >= y_tree - 3 && my <= y_tree + 20 && y_tree >= 80 && y_tree <= tinggi - 80 && menu_terbuka == 0) maka { wedus_gambar_kotak(hwnd, 10, y_tree - 3, pw - 10, y_tree + 20, c_sorot); }
+    jika (y_tree >= 80 && y_tree <= tinggi - 80) maka { wedus_tulis_teks_warna(hwnd, 20, y_tree, "- Musik Klasik", teks_putih); }
+    y_tree = y_tree + 30;
+    
+    // Musik Sedih
+    jika (mx >= 10 && mx <= pw - 10 && my >= y_tree - 3 && my <= y_tree + 20 && y_tree >= 80 && y_tree <= tinggi - 80 && menu_terbuka == 0) maka { wedus_gambar_kotak(hwnd, 10, y_tree - 3, pw - 10, y_tree + 20, c_sorot); }
+    jika (y_tree >= 80 && y_tree <= tinggi - 80) maka { wedus_tulis_teks_warna(hwnd, 20, y_tree, "- Musik Sedih", teks_putih); }
+    y_tree = y_tree + 30;
+    
+    // Musik Penyemangat
+    jika (mx >= 10 && mx <= pw - 10 && my >= y_tree - 3 && my <= y_tree + 20 && y_tree >= 80 && y_tree <= tinggi - 80 && menu_terbuka == 0) maka { wedus_gambar_kotak(hwnd, 10, y_tree - 3, pw - 10, y_tree + 20, c_sorot); }
+    jika (y_tree >= 80 && y_tree <= tinggi - 80) maka { wedus_tulis_teks_warna(hwnd, 20, y_tree, "- Musik Penyemangat", teks_putih); }
+    y_tree = y_tree + 30;
+    
+    // Musik Dugem
+    jika (mx >= 10 && mx <= pw - 10 && my >= y_tree - 3 && my <= y_tree + 20 && y_tree >= 80 && y_tree <= tinggi - 80 && menu_terbuka == 0) maka { wedus_gambar_kotak(hwnd, 10, y_tree - 3, pw - 10, y_tree + 20, c_sorot); }
+    jika (y_tree >= 80 && y_tree <= tinggi - 80) maka { wedus_tulis_teks_warna(hwnd, 20, y_tree, "- Musik Dugem", teks_putih); }
+    y_tree = y_tree + 30;
+    
+    // Daftar Putar
+    jika (mx >= 10 && mx <= pw - 10 && my >= y_tree - 3 && my <= y_tree + 20 && y_tree >= 80 && y_tree <= tinggi - 80 && menu_terbuka == 0) maka { wedus_gambar_kotak(hwnd, 10, y_tree - 3, pw - 10, y_tree + 20, c_sorot); }
+    jika (y_tree >= 80 && y_tree <= tinggi - 80) maka {
+        jika (tree_playlist == 1) maka { wedus_tulis_teks_warna(hwnd, 20, y_tree, "v Daftar Putar", c_sorot); } lainnya { wedus_tulis_teks_warna(hwnd, 20, y_tree, "> Daftar Putar", teks_putih); }
+    }
+    y_tree = y_tree + 30;
+    jika (tree_playlist == 1) maka {
+        jika (mx >= 30 && mx <= pw - 20 && my >= y_tree - 3 && my <= y_tree + 16 && y_tree >= 80 && y_tree <= tinggi - 80 && menu_terbuka == 0) maka { wedus_gambar_kotak(hwnd, 30, y_tree - 3, pw - 20, y_tree + 16, c_sorot); }
+        jika (y_tree >= 80 && y_tree <= tinggi - 80) maka { wedus_tulis_teks_warna(hwnd, 40, y_tree, "- Buka Playlist", teks_abu); } y_tree = y_tree + 20;
+        jika (mx >= 30 && mx <= pw - 20 && my >= y_tree - 3 && my <= y_tree + 16 && y_tree >= 80 && y_tree <= tinggi - 80 && menu_terbuka == 0) maka { wedus_gambar_kotak(hwnd, 30, y_tree - 3, pw - 20, y_tree + 16, c_sorot); }
+        jika (y_tree >= 80 && y_tree <= tinggi - 80) maka { wedus_tulis_teks_warna(hwnd, 40, y_tree, "- Simpan Playlist", teks_abu); } y_tree = y_tree + 20;
+        jika (mx >= 30 && mx <= pw - 20 && my >= y_tree - 3 && my <= y_tree + 16 && y_tree >= 80 && y_tree <= tinggi - 80 && menu_terbuka == 0) maka { wedus_gambar_kotak(hwnd, 30, y_tree - 3, pw - 20, y_tree + 16, c_sorot); }
+        jika (y_tree >= 80 && y_tree <= tinggi - 80) maka { wedus_tulis_teks_warna(hwnd, 40, y_tree, "- Hapus File", teks_abu); } y_tree = y_tree + 20;
+        jika (mx >= 30 && mx <= pw - 20 && my >= y_tree - 3 && my <= y_tree + 16 && y_tree >= 80 && y_tree <= tinggi - 80 && menu_terbuka == 0) maka { wedus_gambar_kotak(hwnd, 30, y_tree - 3, pw - 20, y_tree + 16, c_sorot); }
+        jika (y_tree >= 80 && y_tree <= tinggi - 80) maka { wedus_tulis_teks_warna(hwnd, 40, y_tree, "- Hapus Playlist", teks_abu); } y_tree = y_tree + 25;
+    }
+    
+    }
+    // 2. Titlebar & Top Menu
+    wedus_gambar_kotak(hwnd, 0, 0, lebar, 40, bg_menu);
+    
+    // Animasi Run Text
+    ubah _maks = lebar + 400;
+    ubah _fc2 = fc * 2;
+    ubah run_offset = _fc2 - ((_fc2 / _maks) * _maks); // Bergerak ke kiri dan mengulang
+    wedus_tulis_teks_warna(hwnd, lebar - run_offset, 12, "TelaSoundMedia - Cyberpunk Next-Gen Edition", c_sorot);
+    
+    // Masking bagian kiri agar text terlihat keluar dari balik menu Bantuan
+    wedus_gambar_kotak(hwnd, 0, 0, 310, 40, bg_menu);
+    
+    // Hover Highlight pada Header Menus
+    jika (my >= 5 && my <= 35) maka {
+        jika (mx >= 10 && mx <= 55) maka { wedus_gambar_kotak(hwnd, 10, 5, 55, 35, c_sorot); }
+        jika (mx >= 60 && mx <= 100) maka { wedus_gambar_kotak(hwnd, 60, 5, 100, 35, c_sorot); }
+        jika (mx >= 105 && mx <= 145) maka { wedus_gambar_kotak(hwnd, 100, 5, 145, 35, c_sorot); }
+        jika (mx >= 150 && mx <= 190) maka { wedus_gambar_kotak(hwnd, 145, 5, 190, 35, c_sorot); }
+        jika (mx >= 195 && mx <= 235) maka { wedus_gambar_kotak(hwnd, 190, 5, 240, 35, c_sorot); }
+        jika (mx >= 240 && mx <= 305) maka { wedus_gambar_kotak(hwnd, 240, 5, 305, 35, c_sorot); }
+        jika (mx >= 310 && mx <= 370) maka { wedus_gambar_kotak(hwnd, 310, 5, 375, 35, c_sorot); }
+    }
+    
+    // Aktif Menu Box
+    jika (menu_terbuka == 1) maka { wedus_gambar_kotak(hwnd, 10, 5, 55, 35, c_sorot); }
+    wedus_tulis_teks_warna(hwnd, 15, 12, "File", teks_putih);
+    
+    jika (menu_terbuka == 2) maka { wedus_gambar_kotak(hwnd, 60, 5, 100, 35, c_sorot); }
+    wedus_tulis_teks_warna(hwnd, 65, 12, "Edit", teks_putih);
+    
+    jika (menu_terbuka == 3) maka { wedus_gambar_kotak(hwnd, 100, 5, 145, 35, c_sorot); }
+    wedus_tulis_teks_warna(hwnd, 105, 12, "View", teks_putih);
+    
+    jika (menu_terbuka == 4) maka { wedus_gambar_kotak(hwnd, 145, 5, 190, 35, c_sorot); }
+    wedus_tulis_teks_warna(hwnd, 150, 12, "Play", teks_putih);
+    
+    jika (menu_terbuka == 5) maka { wedus_gambar_kotak(hwnd, 190, 5, 240, 35, c_sorot); }
+    wedus_tulis_teks_warna(hwnd, 195, 12, "Tools", teks_putih);
+    
+    jika (menu_terbuka == 6) maka { wedus_gambar_kotak(hwnd, 310, 5, 375, 35, c_sorot); }
+    wedus_tulis_teks_warna(hwnd, 315, 12, "Bantuan", teks_putih);
+    
+    jika (menu_terbuka == 9) maka { wedus_gambar_kotak(hwnd, 240, 5, 305, 35, c_sorot); }
+    wedus_tulis_teks_warna(hwnd, 245, 12, "LayOut", teks_putih);
+    
+    // Sub-header (Glassmorphism effect placeholder)
+    wedus_gambar_kotak(hwnd, pw, 40, lebar, 80, bg_panel);
+    wedus_gambar_bingkai(hwnd, pw, 40, lebar, 80, c_sorot, 1);
+    wedus_tulis_teks_warna(hwnd, pw + 10, 55, "Library > All Tracks", teks_putih);
+    
+    // 4. Panel Lirik & EQ (Kanan) - Dinamis
+    jika (eq_w > 0) maka {
+
+    wedus_gambar_kotak(hwnd, lebar - eq_w, 80, lebar, tinggi - 80, bg_panel);
+    wedus_gambar_bingkai(hwnd, lebar - eq_w, 80, lebar, tinggi - 80, c_sorot, 1);
+    jika (tampil_eq == 1) maka {
+        wedus_tulis_teks_warna(hwnd, lebar - eq_w + 10, 90, "32-Band AI Equalizer", c_sorot);
+        wedus_gambar_garis(hwnd, lebar - eq_w, 110, lebar, 110, c_sorot, 1);
+        
+        // Real Interactive EQ Sliders (Y: 120 to 170)
+        ubah eq_i = 0;
+        selama (eq_i < 16) {
+            ubah x_eq = (lebar - eq_w + 10) + (eq_i * 15);
+            ubah val_eq = eq_dapat(eq_i); // 0 to 100
+            ubah h_eq = (val_eq * 50) / 100; // max height 50
+            
+            // BG Line
+            wedus_gambar_garis(hwnd, x_eq + 3, 120, x_eq + 3, 170, 0x444444, 2);
+            // Handle / Slider Bar
+            wedus_gambar_kotak(hwnd, x_eq, 170 - h_eq, x_eq + 6, 170 - h_eq + 4, c_sorot);
+            
+            eq_i = eq_i + 1;
+        }
+        
+        wedus_tulis_teks_warna(hwnd, lebar - eq_w + 10, 180, "Presets:", teks_abu);
+        wedus_tulis_teks_warna(hwnd, lebar - 215, 180, "Rock", c_sorot);
+        wedus_tulis_teks_warna(hwnd, lebar - 175, 180, "Pop", c_sorot);
+        wedus_tulis_teks_warna(hwnd, lebar - 140, 180, "Punk", c_sorot);
+        wedus_tulis_teks_warna(hwnd, lebar - 95, 180, "Metal", c_sorot);
+        wedus_tulis_teks_warna(hwnd, lebar - 45, 180, "Flat", c_sorot);
+        
+        wedus_tulis_teks_warna(hwnd, lebar - 270, 205, "Lyrics:", teks_abu);
+        wedus_tulis_teks_warna(hwnd, lebar - 260, 225, "Synchronizing...", teks_putih);
+        
+        // SPESIAL EFEK MUSIK
+        wedus_gambar_garis(hwnd, lebar - eq_w, 250, lebar, 250, c_sorot, 1);
+        wedus_tulis_teks_warna(hwnd, lebar - (eq_w / 2) - 60, 260, "Spesial Efek Musik", c_sorot);
+        
+
+        // Fungsi helper inline untuk render efek
+        ubah base_x = lebar - eq_w;
+        
+        jika (mx >= base_x + 15 && mx <= base_x + 63 && my >= 290 && my <= 338) maka { wedus_gambar_bingkai(hwnd, base_x + 13, 288, base_x + 65, 340, 0xFFFFFF, 1); }
+        jika (mx >= base_x + 85 && mx <= base_x + 133 && my >= 290 && my <= 338) maka { wedus_gambar_bingkai(hwnd, base_x + 83, 288, base_x + 135, 340, 0xFFFFFF, 1); }
+        jika (mx >= base_x + 155 && mx <= base_x + 203 && my >= 290 && my <= 338) maka { wedus_gambar_bingkai(hwnd, base_x + 153, 288, base_x + 205, 340, 0xFFFFFF, 1); }
+        jika (mx >= base_x + 225 && mx <= base_x + 273 && my >= 290 && my <= 338) maka { wedus_gambar_bingkai(hwnd, base_x + 223, 288, base_x + 275, 340, 0xFFFFFF, 1); }
+        
+        jika (mx >= base_x + 15 && mx <= base_x + 63 && my >= 370 && my <= 418) maka { wedus_gambar_bingkai(hwnd, base_x + 13, 368, base_x + 65, 420, 0xFFFFFF, 1); }
+        jika (mx >= base_x + 85 && mx <= base_x + 133 && my >= 370 && my <= 418) maka { wedus_gambar_bingkai(hwnd, base_x + 83, 368, base_x + 135, 420, 0xFFFFFF, 1); }
+        jika (mx >= base_x + 155 && mx <= base_x + 203 && my >= 370 && my <= 418) maka { wedus_gambar_bingkai(hwnd, base_x + 153, 368, base_x + 205, 420, 0xFFFFFF, 1); }
+        jika (mx >= base_x + 225 && mx <= base_x + 273 && my >= 370 && my <= 418) maka { wedus_gambar_bingkai(hwnd, base_x + 223, 368, base_x + 275, 420, 0xFFFFFF, 1); }
+        
+        // Active border
+        jika (ts_efek_aktif == 6) maka { wedus_gambar_bingkai(hwnd, base_x + 12, 287, base_x + 66, 341, c_sorot, 2); }
+        jika (ts_efek_aktif == 7) maka { wedus_gambar_bingkai(hwnd, base_x + 82, 287, base_x + 136, 341, c_sorot, 2); }
+        jika (ts_efek_aktif == 8) maka { wedus_gambar_bingkai(hwnd, base_x + 152, 287, base_x + 206, 341, c_sorot, 2); }
+        jika (ts_efek_aktif == 9) maka { wedus_gambar_bingkai(hwnd, base_x + 222, 287, base_x + 276, 341, c_sorot, 2); }
+        
+        jika (ts_efek_aktif == 10) maka { wedus_gambar_bingkai(hwnd, base_x + 12, 367, base_x + 66, 421, c_sorot, 2); }
+        jika (ts_efek_aktif == 11) maka { wedus_gambar_bingkai(hwnd, base_x + 82, 367, base_x + 136, 421, c_sorot, 2); }
+        jika (ts_efek_aktif == 12) maka { wedus_gambar_bingkai(hwnd, base_x + 152, 367, base_x + 206, 421, c_sorot, 2); }
+        jika (ts_efek_aktif == 13) maka { wedus_gambar_bingkai(hwnd, base_x + 222, 367, base_x + 276, 421, c_sorot, 2); }
+        
+        // Ikon 1: Ambien (6)
+
+        wedus_gambar_bitmap(hwnd, lebar - eq_w + 15, 290, 48, 48, "aset\\efek_ambien.bmp");
+        wedus_tulis_teks_warna(hwnd, lebar - eq_w + 15, 345, "Ambien", teks_putih);
+        
+        // Ikon 2: Studio (7)
+        wedus_gambar_bitmap(hwnd, lebar - eq_w + 85, 290, 48, 48, "aset\\efek_studio.bmp");
+        wedus_tulis_teks_warna(hwnd, lebar - eq_w + 85, 345, "Studio", teks_putih);
+        
+        // Ikon 3: Konser (8)
+        wedus_gambar_bitmap(hwnd, lebar - eq_w + 155, 290, 48, 48, "aset\\efek_konser.bmp");
+        wedus_tulis_teks_warna(hwnd, lebar - eq_w + 155, 345, "Konser", teks_putih);
+        
+        // Ikon 4: Pantai (9)
+        wedus_gambar_bitmap(hwnd, lebar - eq_w + 225, 290, 48, 48, "aset\\efek_pantai.bmp");
+        wedus_tulis_teks_warna(hwnd, lebar - eq_w + 225, 345, "Pantai", teks_putih);
+        
+        // Ikon 5: Aula (10)
+        wedus_gambar_bitmap(hwnd, lebar - eq_w + 15, 370, 48, 48, "aset\\efek_aula.bmp");
+        wedus_tulis_teks_warna(hwnd, lebar - eq_w + 15, 425, "Aula", teks_putih);
+        
+        // Ikon 6: 17an (11)
+        wedus_gambar_bitmap(hwnd, lebar - eq_w + 85, 370, 48, 48, "aset\\efek_17an.bmp");
+        wedus_tulis_teks_warna(hwnd, lebar - eq_w + 85, 425, "17-an", teks_putih);
+        
+        // Ikon 7: Pengajian (12)
+        wedus_gambar_bitmap(hwnd, lebar - eq_w + 155, 370, 48, 48, "aset\\efek_pengajian.bmp");
+        wedus_tulis_teks_warna(hwnd, lebar - eq_w + 155, 425, "Ngaji", teks_putih);
+
+        // Ikon 8: Jumatan (13)
+        wedus_gambar_bitmap(hwnd, lebar - eq_w + 225, 370, 48, 48, "aset\\efek_jumatan.bmp");
+        wedus_tulis_teks_warna(hwnd, lebar - eq_w + 225, 425, "Jum'at", teks_putih);
+
+
+    } lainnya {
+        wedus_tulis_teks_warna(hwnd, lebar - eq_w + 10, 90, "Lyrics:", teks_abu);
+        wedus_gambar_garis(hwnd, lebar - eq_w, 110, lebar, 110, c_sorot, 1);
+        wedus_tulis_teks_warna(hwnd, lebar - 260, 130, "Synchronizing...", teks_putih);
+    }
+    
+    }
+    // 5. Panel Tengah Atas (Video / AI Visualizer)
+
+    ubah vis_w = lebar - pw - eq_w;
+    jika (ts_layout == 0 || ts_layout == 1) maka {
+    wedus_gambar_kotak(hwnd, pw + 10, 90, pw + vis_w - 10, 340, bg_menu); // Visualizer BG
+    wedus_gambar_bingkai(hwnd, pw + 10, 90, pw + vis_w - 10, 340, c_sorot, 1);
+    
+    // SIMULASI VISUALISATOR SPEKTRUM AI 3D (Fluid & Particles)
+    ubah c_vis = c_sorot;
+    jika (tema == 5) maka { c_vis = 0xFFFF00; } // Cyan accent in Cyberpunk
+    
+    ubah vis_bar = 0;
+    selama (vis_bar < 40) {
+            ubah x_vis = pw + 20 + (vis_bar * ((vis_w - 30) / 40));
+            ubah h_vis = vis_dapat_bar(vis_bar);
+        ubah p_y = vis_dapat_peak(vis_bar);
+        
+        // Spectrum Bars (Draws from bottom up)
+        wedus_gambar_kotak(hwnd, x_vis, 330 - h_vis, x_vis + 5, 330, c_vis);
+        
+        // Particles (Dynamic Fluid simulation Peaks)
+        jika (is_playing == 1 && p_y > h_vis) maka {
+            wedus_gambar_lingkaran(hwnd, x_vis + 2, 330 - p_y, 2, teks_putih);
+        }
+        
+        vis_bar = vis_bar + 1;
+    }
+    
+
+    
+    }
+    // Render Dropdown Menu dengan Hover Sorotan
+    jika (menu_terbuka == 1) maka {
+        wedus_gambar_kotak(hwnd, 10, 40, 200, 160, bg_menu);
+        jika (mx >= 10 && mx <= 200 && my >= 45 && my <= 75) maka { wedus_gambar_kotak(hwnd, 12, 45, 198, 75, c_sorot); }
+        jika (mx >= 10 && mx <= 200 && my >= 75 && my <= 105) maka { wedus_gambar_kotak(hwnd, 12, 75, 198, 105, c_sorot); }
+        jika (mx >= 10 && mx <= 200 && my >= 105 && my <= 135) maka { wedus_gambar_kotak(hwnd, 12, 105, 198, 135, c_sorot); }
+        jika (mx >= 10 && mx <= 200 && my >= 135 && my <= 165) maka { wedus_gambar_kotak(hwnd, 12, 135, 198, 165, c_sorot); }
+        wedus_tulis_teks_warna(hwnd, 20, 52, "Open Media File...", teks_putih);
+        wedus_tulis_teks_warna(hwnd, 20, 82, "Open URL...", teks_putih);
+        wedus_tulis_teks_warna(hwnd, 20, 112, "Add/Rescan files...", teks_putih);
+        wedus_tulis_teks_warna(hwnd, 20, 142, "Exit", teks_putih);
+    }
+    jika (menu_terbuka == 2) maka {
+        wedus_gambar_kotak(hwnd, 60, 40, 200, 100, bg_menu);
+        jika (mx >= 60 && mx <= 200 && my >= 45 && my <= 75) maka { wedus_gambar_kotak(hwnd, 62, 45, 198, 75, c_sorot); }
+        jika (mx >= 60 && mx <= 200 && my >= 75 && my <= 105) maka { wedus_gambar_kotak(hwnd, 62, 75, 198, 105, c_sorot); }
+        wedus_tulis_teks_warna(hwnd, 70, 52, "Undo", teks_putih);
+        wedus_tulis_teks_warna(hwnd, 70, 82, "Preferences", teks_putih);
+    }
+    jika (menu_terbuka == 3) maka { // View (Theming)
+        wedus_gambar_kotak(hwnd, 100, 40, 260, 310, bg_menu);
+        jika (mx >= 100 && mx <= 260 && my >= 45 && my <= 75) maka { wedus_gambar_kotak(hwnd, 102, 45, 258, 75, c_sorot); }
+        jika (mx >= 100 && mx <= 260 && my >= 75 && my <= 105) maka { wedus_gambar_kotak(hwnd, 102, 75, 258, 105, c_sorot); }
+        jika (mx >= 100 && mx <= 260 && my >= 105 && my <= 135) maka { wedus_gambar_kotak(hwnd, 102, 105, 258, 135, c_sorot); }
+        jika (mx >= 100 && mx <= 260 && my >= 135 && my <= 165) maka { wedus_gambar_kotak(hwnd, 102, 135, 258, 165, c_sorot); }
+        jika (mx >= 100 && mx <= 260 && my >= 165 && my <= 195) maka { wedus_gambar_kotak(hwnd, 102, 165, 258, 195, c_sorot); }
+        jika (mx >= 100 && mx <= 260 && my >= 195 && my <= 225) maka { wedus_gambar_kotak(hwnd, 102, 195, 258, 225, c_sorot); }
+        jika (mx >= 100 && mx <= 260 && my >= 225 && my <= 255) maka { wedus_gambar_kotak(hwnd, 102, 225, 258, 255, c_sorot); }
+        jika (mx >= 100 && mx <= 260 && my >= 255 && my <= 285) maka { wedus_gambar_kotak(hwnd, 102, 255, 258, 285, c_sorot); }
+        jika (mx >= 100 && mx <= 260 && my >= 285 && my <= 315) maka { wedus_gambar_kotak(hwnd, 102, 285, 258, 315, c_sorot); }
+        wedus_tulis_teks_warna(hwnd, 110, 52, "Tema: Gelap", teks_putih);
+        wedus_tulis_teks_warna(hwnd, 110, 82, "Tema: Terang", teks_putih);
+        wedus_tulis_teks_warna(hwnd, 110, 112, "Tema: Hacker", teks_putih);
+        wedus_tulis_teks_warna(hwnd, 110, 142, "Tema: Romantis", teks_putih);
+        wedus_tulis_teks_warna(hwnd, 110, 172, "Tema: Anak-anak", teks_putih);
+        wedus_tulis_teks_warna(hwnd, 110, 202, "Tema: Cyberpunk", teks_putih);
+        wedus_tulis_teks_warna(hwnd, 110, 232, "Tema: Ambient", teks_putih);
+        wedus_tulis_teks_warna(hwnd, 110, 262, "Tema: Mistery", teks_putih);
+        wedus_tulis_teks_warna(hwnd, 110, 292, "Tema: Aquatic", teks_putih);
+    }
+        jika (menu_terbuka == 4) maka { // PLAY (10 Submenu Lengkap)
+        wedus_gambar_kotak(hwnd, 145, 40, 480, 325, bg_menu);
+        jika (mx >= 145 && mx <= 480 && my >= 40 && my <= 68) maka { wedus_gambar_kotak(hwnd, 147, 42, 478, 68, c_sorot); }
+        jika (mx >= 145 && mx <= 480 && my >= 68 && my <= 96) maka { wedus_gambar_kotak(hwnd, 147, 68, 478, 96, c_sorot); }
+        jika (mx >= 145 && mx <= 480 && my >= 96 && my <= 124) maka { wedus_gambar_kotak(hwnd, 147, 96, 478, 124, c_sorot); }
+        jika (mx >= 145 && mx <= 480 && my >= 124 && my <= 152) maka { wedus_gambar_kotak(hwnd, 147, 124, 478, 152, c_sorot); }
+        jika (mx >= 145 && mx <= 480 && my >= 152 && my <= 180) maka { wedus_gambar_kotak(hwnd, 147, 152, 478, 180, c_sorot); }
+        jika (mx >= 145 && mx <= 480 && my >= 180 && my <= 208) maka { wedus_gambar_kotak(hwnd, 147, 180, 478, 208, c_sorot); }
+        jika (mx >= 145 && mx <= 480 && my >= 208 && my <= 236) maka { wedus_gambar_kotak(hwnd, 147, 208, 478, 236, c_sorot); }
+        jika (mx >= 145 && mx <= 480 && my >= 236 && my <= 264) maka { wedus_gambar_kotak(hwnd, 147, 236, 478, 264, c_sorot); }
+        jika (mx >= 145 && mx <= 480 && my >= 264 && my <= 292) maka { wedus_gambar_kotak(hwnd, 147, 264, 478, 292, c_sorot); }
+        jika (mx >= 145 && mx <= 480 && my >= 292 && my <= 320) maka { wedus_gambar_kotak(hwnd, 147, 292, 478, 320, c_sorot); }
+        
+        wedus_tulis_teks_warna(hwnd, 155, 46, "Play / Pause            [Spasi]", teks_putih);
+        wedus_tulis_teks_warna(hwnd, 155, 74, "Stop                    [S]", teks_putih);
+        wedus_tulis_teks_warna(hwnd, 155, 102, "Mode: Ulang 1 Lagu      [1]", teks_putih);
+        wedus_tulis_teks_warna(hwnd, 155, 130, "Mode: Ulang Semua       [A]", teks_putih);
+        wedus_tulis_teks_warna(hwnd, 155, 158, "Mode: Random            [R]", teks_putih);
+        wedus_tulis_teks_warna(hwnd, 155, 186, "Lompat +10 Detik        [Kanan]", teks_putih);
+        wedus_tulis_teks_warna(hwnd, 155, 214, "Lompat -10 Detik        [Kiri]", teks_putih);
+        wedus_tulis_teks_warna(hwnd, 155, 242, "Kecepatan: Lamban (0.5x)[Z]", teks_putih);
+        wedus_tulis_teks_warna(hwnd, 155, 270, "Kecepatan: Cepat (1.5x) [C]", teks_putih);
+        wedus_tulis_teks_warna(hwnd, 155, 298, "Kecepatan: Normal (1.0x)[X]", teks_putih);
+    }
+    jika (menu_terbuka == 5) maka { // Tools
+        wedus_gambar_kotak(hwnd, 190, 40, 330, 100, bg_menu);
+        jika (mx >= 190 && mx <= 330 && my >= 45 && my <= 75) maka { wedus_gambar_kotak(hwnd, 192, 45, 328, 75, c_sorot); }
+        jika (mx >= 190 && mx <= 330 && my >= 75 && my <= 105) maka { wedus_gambar_kotak(hwnd, 192, 75, 328, 105, c_sorot); }
+        wedus_tulis_teks_warna(hwnd, 200, 52, "Equalizer", teks_putih);
+        wedus_tulis_teks_warna(hwnd, 200, 82, "Preferences", teks_putih);
+    }
+    jika (menu_terbuka == 6) maka { // Bantuan
+        wedus_gambar_kotak(hwnd, 310, 40, 470, 100, bg_menu);
+        jika (mx >= 310 && mx <= 470 && my >= 45 && my <= 75) maka { wedus_gambar_kotak(hwnd, 312, 45, 468, 75, c_sorot); }
+        jika (mx >= 310 && mx <= 470 && my >= 75 && my <= 105) maka { wedus_gambar_kotak(hwnd, 312, 75, 468, 105, c_sorot); }
+        wedus_tulis_teks_warna(hwnd, 320, 52, "Tentang Telasound", teks_putih);
+        wedus_tulis_teks_warna(hwnd, 320, 82, "Hubungi Developer", teks_putih);
+    }
+    jika (menu_terbuka == 9) maka { // LayOut
+        wedus_gambar_kotak(hwnd, 240, 40, 380, 160, bg_menu);
+        wedus_gambar_bingkai(hwnd, 240, 40, 380, 160, c_sorot, 1);
+        
+        jika (mx >= 240 && mx <= 380 && my >= 45 && my <= 75) maka { wedus_gambar_kotak(hwnd, 242, 45, 378, 75, c_sorot); }
+        jika (mx >= 240 && mx <= 380 && my >= 75 && my <= 105) maka { wedus_gambar_kotak(hwnd, 242, 75, 378, 105, c_sorot); }
+        jika (mx >= 240 && mx <= 380 && my >= 105 && my <= 135) maka { wedus_gambar_kotak(hwnd, 242, 105, 378, 135, c_sorot); }
+        jika (mx >= 240 && mx <= 380 && my >= 135 && my <= 165) maka { wedus_gambar_kotak(hwnd, 242, 135, 378, 165, c_sorot); }
+        
+        wedus_tulis_teks_warna(hwnd, 250, 52, "Default", teks_putih);
+        wedus_tulis_teks_warna(hwnd, 250, 82, "Musisi", teks_putih);
+        wedus_tulis_teks_warna(hwnd, 250, 112, "Umum", teks_putih);
+        wedus_tulis_teks_warna(hwnd, 250, 142, "Pelajar", teks_putih);
+    }
+
+}
+
+fungsi telasound_gui_render_kontrol_pemutar(hwnd: bilangan, lebar: bilangan, tinggi: bilangan, judul_lagu: teks, posisi: bilangan, durasi: bilangan, vol: bilangan, is_playing: bilangan, tema: bilangan) {
+    ubah teks_putih = tema_teks_utama(tema);
+    ubah teks_abu = tema_teks_redup(tema);
+    ubah c_sorot = tema_sorot(tema);
+
+    // Layout State Initialization
+
+
+    ubah pw = dialog_dapat_pohon_lebar();
+    ubah eq_w = dialog_dapat_eq_lebar();
+    ubah ts_layout = dialog_dapat_layout();
+    jika (ts_layout == 1) maka { pw = 0; eq_w = 350; }
+    jika (ts_layout == 3) maka { eq_w = 0; }
+
+    ubah bg_panel = tema_bg_panel(tema);
+    
+    ubah y_kontrol = tinggi - 80;
+    wedus_gambar_kotak(hwnd, 0, y_kontrol, lebar, tinggi, bg_panel);
+    wedus_gambar_bingkai(hwnd, 0, y_kontrol, lebar, tinggi, c_sorot, 1);
+    
+    // Garis batas tegas di atas track durasi
+    wedus_gambar_garis(hwnd, 0, y_kontrol - 2, lebar, y_kontrol - 2, c_sorot, 1);
+    
+    // Progress bar
+    wedus_gambar_garis(hwnd, 0, y_kontrol + 2, lebar, y_kontrol + 2, 0x444444, 4);
+    ubah w_prog = 0;
+    jika (durasi > 0) maka { w_prog = (posisi * lebar) / durasi; }
+    jika (w_prog > lebar) maka { w_prog = lebar; }
+    wedus_gambar_garis(hwnd, 0, y_kontrol + 2, w_prog, y_kontrol + 2, c_sorot, 4);
+    
+    // Tombol Lingkaran (Simulasi Neumorphism)
+    wedus_gambar_lingkaran(hwnd, 50, y_kontrol + 40, 20, c_sorot);
+    wedus_tulis_teks_warna(hwnd, 43, y_kontrol + 32, "|<", bg_panel);
+    
+    wedus_gambar_lingkaran(hwnd, 115, y_kontrol + 40, 25, c_sorot);
+    jika (is_playing == 1) maka {
+        wedus_tulis_teks_warna(hwnd, 107, y_kontrol + 32, "||", bg_panel);
+    } lainnya {
+        wedus_tulis_teks_warna(hwnd, 107, y_kontrol + 32, ">", bg_panel);
+    }
+    
+    wedus_gambar_lingkaran(hwnd, 180, y_kontrol + 40, 20, c_sorot);
+    wedus_tulis_teks_warna(hwnd, 173, y_kontrol + 32, ">|", bg_panel);
+    
+    wedus_tulis_teks_warna(hwnd, 250, y_kontrol + 32, judul_lagu, teks_putih);
+    
+    // Durasi Realtime dan Volume Control (Responsif relatif terhadap lebar jendela)
+    ubah x_vol = lebar - 140;
+    jika (x_vol > 350) maka {
+        ubah teks_durasi = format_durasi(posisi) + " / " + format_durasi(durasi);
+        wedus_tulis_teks_warna(hwnd, x_vol - 130, y_kontrol + 32, teks_durasi, c_sorot);
+        
+        wedus_tulis_teks_warna(hwnd, x_vol - 35, y_kontrol + 32, "Vol", teks_abu);
+        wedus_gambar_garis(hwnd, x_vol, y_kontrol + 40, x_vol + 100, y_kontrol + 40, 0x444444, 4);
+        ubah w_vol = (vol * 100) / 1000;
+        wedus_gambar_garis(hwnd, x_vol, y_kontrol + 40, x_vol + w_vol, y_kontrol + 40, c_sorot, 4);
+    }
+}
+
+fungsi telasound_gui_render_konteks(hwnd: bilangan, ctx_x: bilangan, ctx_y: bilangan, menu_terbuka: bilangan, ts_tema: bilangan, mx: bilangan, my: bilangan, lbr: bilangan, tgi: bilangan) {
+    jika (menu_terbuka == 7) maka {
+        ubah bg_menu = tema_bg_menu(ts_tema);
+        ubah c_teks = tema_teks_utama(ts_tema);
+        ubah c_sorot = tema_sorot(ts_tema);
+        
+        // Kotak Menu Utama
+        wedus_gambar_kotak(hwnd, ctx_x, ctx_y, ctx_x + 180, ctx_y + 130, bg_menu);
+        
+        // Hover
+        jika (mx >= ctx_x && mx <= ctx_x + 180 && my >= ctx_y + 5 && my <= ctx_y + 35) maka { wedus_gambar_kotak(hwnd, ctx_x + 2, ctx_y + 5, ctx_x + 178, ctx_y + 35, c_sorot); }
+        jika (mx >= ctx_x && mx <= ctx_x + 180 && my >= ctx_y + 35 && my <= ctx_y + 65) maka { wedus_gambar_kotak(hwnd, ctx_x + 2, ctx_y + 35, ctx_x + 178, ctx_y + 65, c_sorot); }
+        jika (mx >= ctx_x && mx <= ctx_x + 180 && my >= ctx_y + 65 && my <= ctx_y + 95) maka { wedus_gambar_kotak(hwnd, ctx_x + 2, ctx_y + 65, ctx_x + 178, ctx_y + 95, c_sorot); }
+        jika (mx >= ctx_x && mx <= ctx_x + 180 && my >= ctx_y + 95 && my <= ctx_y + 125) maka { wedus_gambar_kotak(hwnd, ctx_x + 2, ctx_y + 95, ctx_x + 178, ctx_y + 125, c_sorot); }
+        
+        wedus_tulis_teks_warna(hwnd, ctx_x + 10, ctx_y + 12, "Hapus File", c_teks);
+        wedus_tulis_teks_warna(hwnd, ctx_x + 10, ctx_y + 42, "Bersihkan Semua", c_teks);
+        wedus_tulis_teks_warna(hwnd, ctx_x + 10, ctx_y + 72, "Properti...", c_teks);
+        wedus_tulis_teks_warna(hwnd, ctx_x + 10, ctx_y + 102, "Pengelompokan >", c_teks);
+    }
+    jika (menu_terbuka == 8) maka {
+        // Sub-Menu Pengelompokan
+        ubah bg_menu = tema_bg_menu(ts_tema);
+        ubah c_teks = tema_teks_utama(ts_tema);
+        ubah c_sorot = tema_sorot(ts_tema);
+        
+        ubah cx2 = (lbr - 200) / 2;
+        ubah cy2 = (tgi - 160) / 2;
+        
+        wedus_gambar_kotak(hwnd, cx2, cy2, cx2 + 200, cy2 + 160, bg_menu);
+        jika (mx >= cx2 && mx <= cx2 + 200 && my >= cy2 + 5 && my <= cy2 + 35) maka { wedus_gambar_kotak(hwnd, cx2 + 2, cy2 + 5, cx2 + 198, cy2 + 35, c_sorot); }
+        jika (mx >= cx2 && mx <= cx2 + 200 && my >= cy2 + 35 && my <= cy2 + 65) maka { wedus_gambar_kotak(hwnd, cx2 + 2, cy2 + 35, cx2 + 198, cy2 + 65, c_sorot); }
+        jika (mx >= cx2 && mx <= cx2 + 200 && my >= cy2 + 65 && my <= cy2 + 95) maka { wedus_gambar_kotak(hwnd, cx2 + 2, cy2 + 65, cx2 + 198, cy2 + 95, c_sorot); }
+        jika (mx >= cx2 && mx <= cx2 + 200 && my >= cy2 + 95 && my <= cy2 + 125) maka { wedus_gambar_kotak(hwnd, cx2 + 2, cy2 + 95, cx2 + 198, cy2 + 125, c_sorot); }
+        jika (mx >= cx2 && mx <= cx2 + 200 && my >= cy2 + 125 && my <= cy2 + 155) maka { wedus_gambar_kotak(hwnd, cx2 + 2, cy2 + 125, cx2 + 198, cy2 + 155, c_sorot); }
+        
+        wedus_tulis_teks_warna(hwnd, cx2 + 10, cy2 + 12, "Favorit", c_teks);
+        wedus_tulis_teks_warna(hwnd, cx2 + 10, cy2 + 42, "Musik Klasik", c_teks);
+        wedus_tulis_teks_warna(hwnd, cx2 + 10, cy2 + 72, "Musik Penyemangat", c_teks);
+        wedus_tulis_teks_warna(hwnd, cx2 + 10, cy2 + 102, "Musik Sedih", c_teks);
+        wedus_tulis_teks_warna(hwnd, cx2 + 10, cy2 + 132, "Musik Dugem", c_teks);
+    }
+}
+
+fungsi telasound_gui_render_popup(hwnd: bilangan, lebar: bilangan, tinggi: bilangan, ts_tema: bilangan, popup_aktif: bilangan) {
+    jika (popup_aktif > 0) maka {
+        ubah cx = (lebar - 400) / 2;
+        ubah cy = (tinggi - 300) / 2;
+        
+        ubah bg_utama = tema_bg_panel(ts_tema);
+        ubah c_sorot = tema_sorot(ts_tema);
+        ubah c_teks = tema_teks_utama(ts_tema);
+        ubah c_abu = tema_teks_redup(ts_tema);
+        
+        // Overlay Gelap
+        // Overlay dihapus agar background tetap terlihat
+        
+        // Kotak Pop-up
+        wedus_gambar_kotak(hwnd, cx, cy, cx + 400, cy + 300, bg_utama);
+        wedus_gambar_bingkai(hwnd, cx, cy, cx + 400, cy + 300, c_sorot, 2);
+        
+        // Judul Pop-up
+        wedus_gambar_kotak(hwnd, cx, cy, cx + 400, cy + 50, tema_bg_menu(ts_tema));
+        
+        // Tombol Close (X) di kanan atas
+        wedus_gambar_kotak(hwnd, cx + 350, cy + 10, cx + 390, cy + 40, c_sorot);
+        wedus_tulis_teks_warna(hwnd, cx + 365, cy + 18, "X", 0xFFFFFF);
+        
+        jika (popup_aktif == 1) maka {
+            wedus_tulis_teks_warna(hwnd, cx + 20, cy + 18, "TENTANG TELASOUND", c_teks);
+            wedus_tulis_teks_warna(hwnd, cx + 20, cy + 80, "Telasound Media Player v2.0", c_sorot);
+            wedus_tulis_teks_warna(hwnd, cx + 20, cy + 120, "Dibuat dengan Telacore - Bahasa Pemrograman", c_teks);
+            wedus_tulis_teks_warna(hwnd, cx + 20, cy + 140, "Asli Indonesia berbasis LLVM yang cepat &", c_teks);
+            wedus_tulis_teks_warna(hwnd, cx + 20, cy + 160, "futuristik. Menyajikan kualitas audio sekelas", c_teks);
+            wedus_tulis_teks_warna(hwnd, cx + 20, cy + 180, "studio tanpa menguras memori (Anti-Crash)!", c_teks);
+            wedus_tulis_teks_warna(hwnd, cx + 20, cy + 240, "Copyright (C) 2026 - Semua Hak Dilindungi.", c_abu);
+        }
+        
+        jika (popup_aktif == 2) maka {
+            wedus_tulis_teks_warna(hwnd, cx + 20, cy + 18, "HUBUNGI DEVELOPER", c_teks);
+            wedus_tulis_teks_warna(hwnd, cx + 20, cy + 80, "Pengembang Telasound:", c_teks);
+            wedus_tulis_teks_warna(hwnd, cx + 20, cy + 110, "Mr. Kasirom JhonyROW", c_sorot);
+            wedus_tulis_teks_warna(hwnd, cx + 20, cy + 150, "Email    : kasirom97@gmail.com", c_teks);
+            wedus_tulis_teks_warna(hwnd, cx + 20, cy + 180, "Seluller : 085325399007", c_teks);
+            wedus_tulis_teks_warna(hwnd, cx + 20, cy + 240, "Jangan ragu menghubungi saya untuk kolaborasi!", c_abu);
+        }
+        
+        jika (popup_aktif == 3) maka {
+            wedus_tulis_teks_warna(hwnd, cx + 20, cy + 18, "PROPERTI FILE", c_teks);
+            wedus_tulis_teks_warna(hwnd, cx + 20, cy + 80, "Berhasil memuat properti dari lagu", c_teks);
+            wedus_tulis_teks_warna(hwnd, cx + 20, cy + 110, "yang dipilih pada playlist Anda.", c_teks);
+            wedus_tulis_teks_warna(hwnd, cx + 20, cy + 150, "(Metadata lengkap akan ditambahkan", c_teks);
+            wedus_tulis_teks_warna(hwnd, cx + 20, cy + 170, "pada pembaruan modul ID3Tag)", c_abu);
+        }
+    }
+}
+
+
+

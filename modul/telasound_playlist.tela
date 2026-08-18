@@ -1,0 +1,81 @@
+// ============================================================================
+// TELASOUNDMEDIA: SMART PLAYLIST (Center-Bottom Panel)
+// ============================================================================
+
+impor "../modul/wedus.tela";
+impor "../modul/dialog.tela";
+impor "../modul/telasound_gui.tela";
+
+fungsi telasound_playlist_render(hwnd: bilangan, lebar: bilangan, tinggi: bilangan, pl_index_aktif: bilangan, pl_scroll: bilangan, tema: bilangan) {
+    ubah pw = dialog_dapat_pohon_lebar();
+    ubah eq_w = dialog_dapat_eq_lebar();
+    ubah ts_layout = dialog_dapat_layout();
+    jika (ts_layout == 1) maka { pw = 0; eq_w = 350; } // Musisi
+    jika (ts_layout == 3) maka { eq_w = 0; } // Pelajar
+    
+    ubah area_w = lebar - pw - eq_w;
+    
+    ubah pl_y = 350;
+    jika (ts_layout == 2 || ts_layout == 3) maka { pl_y = 80; } // Umum & Pelajar (No Visualizer)
+ // Total lebar dikurang panel Kiri (250) dan Kanan (280)
+    
+    ubah bg_panel = tema_bg_panel(tema);
+    ubah teks_putih = tema_teks_utama(tema);
+    ubah teks_abu = tema_teks_redup(tema);
+    
+    // Panel List & Border
+    wedus_gambar_kotak(hwnd, pw, pl_y, pw + area_w, tinggi - 80, bg_panel);
+    wedus_gambar_bingkai(hwnd, pw, pl_y, pw + area_w, tinggi - 80, tema_sorot(tema), 1);
+
+    // Hitung Kolom
+    ubah w_title = (area_w * 40) / 100;
+    ubah w_artist = (area_w * 25) / 100;
+    ubah w_album = (area_w * 20) / 100;
+    ubah max_char_title = w_title / 9; // Perkiraan char width
+    
+    // Header Tabel
+    ubah bg_header = tema_bg_menu(tema);
+    wedus_gambar_kotak(hwnd, pw, pl_y, pw + area_w, pl_y + 30, bg_header);
+    wedus_gambar_bingkai(hwnd, pw, pl_y, pw + area_w, pl_y + 30, tema_sorot(tema), 1);
+    
+    wedus_tulis_teks_warna(hwnd, pw + 10, 360, "Title", teks_abu);
+    wedus_tulis_teks_warna(hwnd, pw + 10 + w_title, 360, "Artist", teks_abu);
+    wedus_tulis_teks_warna(hwnd, pw + 10 + w_title + w_artist, 360, "Album", teks_abu);
+    wedus_tulis_teks_warna(hwnd, pw + 10 + w_title + w_artist + w_album, 360, "Genre", teks_abu);
+    
+    // Vertical Separators
+    wedus_gambar_garis(hwnd, pw + w_title, pl_y, pw + w_title, tinggi - 80, tema_sorot(tema), 1);
+    wedus_gambar_garis(hwnd, pw + w_title + w_artist, pl_y, pw + w_title + w_artist, tinggi - 80, tema_sorot(tema), 1);
+    wedus_gambar_garis(hwnd, pw + w_title + w_artist + w_album, pl_y, pw + w_title + w_artist + w_album, tinggi - 80, tema_sorot(tema), 1);
+    
+    // Render Baris-Baris Playlist (Berdasarkan Array C-Backend dan Scroll Offset)
+    ubah jumlah_lagu = playlist_jumlah();
+    ubah sisa_h = tinggi - 80 - 381;
+    ubah max_baris = sisa_h / 20;
+    jika (max_baris < 3) maka { max_baris = 3; }
+    
+    ubah i = 0;
+    selama (i < max_baris) {
+        ubah indeks_asli = pl_scroll + i;
+        jika (indeks_asli < jumlah_lagu) maka {
+            ubah y_baris = 381 + (i * 20);
+            ubah judul_baris = playlist_dapat_judul(indeks_asli);
+            ubah judul_potong = teks_ambil_baris(judul_baris, max_char_title, 0); // Truncate dynamically
+            
+            jika (pl_index_aktif == indeks_asli) maka {
+                wedus_gambar_kotak(hwnd, pw + 1, y_baris, pw + area_w - 1, y_baris + 20, tema_sorot(tema)); // Highlight row
+                wedus_tulis_teks_warna(hwnd, pw + 10, y_baris + 4, "> " + judul_potong, tema_bg_utama(tema));
+                // Placeholder Data
+                wedus_tulis_teks_warna(hwnd, pw + 10 + w_title, y_baris + 4, "Unknown Artist", tema_bg_utama(tema));
+                wedus_tulis_teks_warna(hwnd, pw + 10 + w_title + w_artist, y_baris + 4, "Unknown Album", tema_bg_utama(tema));
+                wedus_tulis_teks_warna(hwnd, pw + 10 + w_title + w_artist + w_album, y_baris + 4, "Audio", tema_bg_utama(tema));
+            } lainnya {
+                wedus_tulis_teks_warna(hwnd, pw + 10, y_baris + 4, "  " + judul_potong, teks_abu);
+                wedus_tulis_teks_warna(hwnd, pw + 10 + w_title, y_baris + 4, "Unknown Artist", teks_abu);
+                wedus_tulis_teks_warna(hwnd, pw + 10 + w_title + w_artist, y_baris + 4, "Unknown Album", teks_abu);
+                wedus_tulis_teks_warna(hwnd, pw + 10 + w_title + w_artist + w_album, y_baris + 4, "Audio", teks_abu);
+            }
+        }
+        i = i + 1;
+    }
+}

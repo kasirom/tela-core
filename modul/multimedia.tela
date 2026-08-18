@@ -1,0 +1,41 @@
+// ============================================================================
+// MODUL TELACORE: MULTIMEDIA & AUDIO
+// ============================================================================
+// Pustaka tingkat tinggi untuk pemutaran audio, efek suara, nada bip frekuensi,
+// dan pemanggilan kotak dialog sistem pada Tela Core.
+// ============================================================================
+
+gunakan Sistem::*;
+
+// Deklarasi FFI C Native Win32 API (WinMM, User32, Kernel32)
+luar fungsi PlaySoundA(soundName: teks, hmod_val: bilangan, flags_val: bilangan) -> bilangan;
+luar fungsi Beep(dwFreq: bilangan, dwDuration: bilangan) -> bilangan;
+luar fungsi MessageBoxA(hwnd_val: bilangan, pesan_val: teks, judul_val: teks, tipe_val: bilangan) -> bilangan;
+
+// ----------------------------------------------------------------------------
+// FUNGSIONALITAS MULTIMEDIA
+// ----------------------------------------------------------------------------
+
+// Memutar suara sistem (contoh: "SystemAsterisk", "SystemNotification", "SystemHand", "SystemExclamation")
+fungsi multimedia_putar_suara_sistem(nama_suara: teks) {
+    // SND_ASYNC = 0x0001
+    PlaySoundA(nama_suara, 0, 1);
+}
+
+// Memutar berkas audio .WAV secara asinkron
+fungsi multimedia_putar_berkas_wav(path_berkas: teks) {
+    // SND_FILENAME = 0x00020000 | SND_ASYNC = 0x0001 => 0x00020001
+    PlaySoundA(path_berkas, 0, 131073);
+}
+
+// Menghasilkan nada bip dengan frekuensi Hz dan durasi milidetik tertentu
+fungsi multimedia_bip(frekuensi: bilangan, durasi_ms: bilangan) {
+    Beep(frekuensi, durasi_ms);
+}
+
+// Menampilkan dialog pesan modal dengan tombol OK / Peringatan
+fungsi multimedia_dialog_pesan(judul: teks, pesan: teks, jenis: bilangan) -> bilangan {
+    // jenis: 0 = OK (Info), 48 = Peringatan (!), 16 = Error (X), 64 = Informasi (i)
+    ubah hasil = MessageBoxA(0, pesan, judul, jenis);
+    kembalikan hasil;
+}

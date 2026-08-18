@@ -1,0 +1,35 @@
+// ============================================================================
+// TELASOUND: 3D AI AUDIO VISUALIZER
+// ============================================================================
+
+impor "../modul/penampil3d.tela";
+impor "../modul/wedus.tela";
+
+fungsi telasound_visualizer_render_3d(hwnd: bilangan, spektrum_bass: bilangan, spektrum_treble: bilangan, vis_ax: desimal, vis_ay: desimal, vis_az: desimal) {
+    // Panel Visualizer Background
+    wedus_gambar_kotak(hwnd, 50, 80, 600, 420, 0x101010);
+    
+    // Skala reaktif
+    ubah skala_dasar = 100.0;
+    
+    // Konversi spektrum (bilangan) ke desimal (f64) untuk fadd
+    ubah sp_bass_d = spektrum_bass + 0.0;
+    ubah skala_dinamis = skala_dasar + (sp_bass_d * 0.5); // Bass memperbesar visualisator
+    
+    // Warna reaktif (Merah-Biru gradient simulasi)
+    ubah warna_garis = 0x00FF00; // Default Hijau (GDI: BBGGRR -> 0x00FF00 is Green)
+    jika (spektrum_bass > 70) maka {
+        warna_garis = 0x0000FF; // Merah saat bass tinggi (0x0000FF = Red in GDI)
+    } lainnya jika (spektrum_treble > 70) maka {
+        warna_garis = 0xFFFF00; // Cyan saat treble tinggi
+    }
+    
+    // Render objek 3D (Kubus Tesseract)
+    penampil3d_gambar_kubus(hwnd, 325, 250, vis_ax, vis_ay, vis_az, skala_dinamis, warna_garis, 2);
+    
+    // Render Partikel/Elemen sekunder (Piramida berlawanan arah)
+    penampil3d_gambar_piramida(hwnd, 325, 250, vis_ax * -1.5, vis_ay * -1.0, vis_az, skala_dinamis * 0.6, 0xFFFFFF, 1);
+    
+    // Teks Status
+    wedus_tulis_teks(hwnd, 60, 90, "AI-DRIVEN 3D FLUID VISUALIZER");
+}
