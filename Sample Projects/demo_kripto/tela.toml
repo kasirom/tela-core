@@ -1,0 +1,6 @@
+[proyek]
+nama = "demo_kripto"
+versi = "0.1.0"
+entry = "src/main.tela"
+
+[ketergantungan]

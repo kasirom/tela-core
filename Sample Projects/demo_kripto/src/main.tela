@@ -1,0 +1,41 @@
+gunakan Sistem::*;
+gunakan Warna::*;
+gunakan Kripto::*;
+gunakan Teks::*;
+gunakan Konversi::*;
+
+fungsi utama() {
+    Sistem::cetak_teks(Warna::tebal(Warna::sian("🔐 === SUITE KRIPTOGRAFI & KEAMANAN TELACORE === 🔐")));
+    Sistem::cetak_baris();
+    
+    ubah pesan = "Nusantara 2026";
+    Sistem::cetak_teks(Warna::kuning("Teks Sumber: ") + "\"" + pesan + "\"");
+    Sistem::cetak_baris();
+    
+    // 1. SHA-256 (64 hex characters)
+    ubah sha = Kripto::sha256(pesan);
+    Sistem::cetak_teks(Teks::pad_kanan("SHA-256", 12, " ") + ": " + sha);
+    
+    // 2. MD5 (32 hex characters)
+    ubah md5_val = Kripto::md5(pesan);
+    Sistem::cetak_teks(Teks::pad_kanan("MD5", 12, " ") + ": " + md5_val);
+    
+    // 3. DJB2 Hash (64-bit integer)
+    ubah djb = Kripto::hash_djb2(pesan);
+    Sistem::cetak_teks(Teks::pad_kanan("DJB2 Hash", 12, " ") + ": " + Konversi::bilangan_ke_teks(djb));
+    
+    // 4. Base64 Encoding
+    ubah b64 = Kripto::base64_encode(pesan);
+    Sistem::cetak_teks(Teks::pad_kanan("Base64", 12, " ") + ": " + b64);
+    
+    // 5. Hex Encoding
+    ubah hex = Kripto::hex_encode(pesan);
+    Sistem::cetak_teks(Teks::pad_kanan("Hex String", 12, " ") + ": " + hex);
+    
+    // 6. ROT13
+    ubah rot = Kripto::rot13(pesan);
+    Sistem::cetak_teks(Teks::pad_kanan("ROT13", 12, " ") + ": " + rot);
+    
+    Sistem::cetak_baris();
+    Sistem::cetak_teks(Warna::hijau("✅ Seluruh kalkulasi kriptografi berhasil diselesaikan."));
+}

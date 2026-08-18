@@ -1,0 +1,15 @@
+gunakan Sistem::*;
+gunakan Antarmuka::*;
+
+fungsi utama() {
+    Antarmuka::kotak_pesan("Selamat Datang", "Aplikasi Desktop TelaCore GUI Native Berhasil Dijalankan!");
+    
+    ubah setuju = Antarmuka::kotak_konfirmasi("Konfirmasi", "Apakah Anda ingin melanjutkan pengujian?");
+    jika setuju {
+        Antarmuka::kotak_peringatan("Informasi", "Anda memilih 'Ya'! Memproses tugas...");
+        Sistem::cetak_teks("[OK] Pengguna menyetujui konfirmasi.");
+    } lainnya {
+        Antarmuka::kotak_kesalahan("Dibatalkan", "Operasi telah dibatalkan oleh pengguna.");
+        Sistem::cetak_teks("[INFO] Pengguna membatalkan operasi.");
+    }
+}

@@ -1,0 +1,23 @@
+gunakan Sistem::*;
+gunakan Warna::*;
+gunakan Konversi::*;
+
+fungsi utama() {
+    Sistem::cetak_teks(Warna::tebal(Warna::sian("⚡ === PERKAKAS BARIS PERINTAH TELACORE CLI === ⚡")));
+    
+    ubah jumlah = Sistem::jumlah_argumen();
+    Sistem::cetak_teks("Jumlah argumen: " + Konversi::bilangan_ke_teks(jumlah));
+    
+    jika jumlah <= 1 {
+        Sistem::cetak_teks(Warna::kuning("ℹ️  Petunjuk Penggunaan:"));
+        Sistem::cetak_teks("   " + Sistem::argumen(0) + " <perintah> [opsi]");
+        Sistem::cetak_teks("Contoh:");
+        Sistem::cetak_teks("   " + Sistem::argumen(0) + " halo nusantara");
+    } lainnya {
+        Sistem::cetak_teks(Warna::hijau("✅ Daftar Argumen Diterima:"));
+        untuk i dalam 0..jumlah {
+            ubah val = Sistem::argumen(i);
+            Sistem::cetak_teks("  [" + Konversi::bilangan_ke_teks(i) + "] " + val);
+        }
+    }
+}

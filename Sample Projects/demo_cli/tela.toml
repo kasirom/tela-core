@@ -1,0 +1,6 @@
+[proyek]
+nama = "demo_cli"
+versi = "0.1.0"
+entry = "src/main.tela"
+
+[ketergantungan]
