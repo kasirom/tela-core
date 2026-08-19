@@ -1,0 +1,66 @@
+gunakan Sistem::*;
+gunakan Warna::*;
+gunakan Teks::*;
+gunakan Konversi::*;
+gunakan Matematika::*;
+gunakan Waktu::*;
+gunakan Koleksi::*;
+gunakan Bit::*;
+gunakan Uji::*;
+
+fungsi judul(t: teks) {
+    Sistem::cetak_baris();
+    Sistem::cetak_teks(Warna::tebal(Warna::kuning("> " + t)));
+}
+
+fungsi utama() {
+    Sistem::cetak_teks(Warna::tebal(Warna::sian("=== SHOWCASE PUSTAKA STANDAR TELACORE ===")));
+
+    judul("Modul Teks::");
+    ubah kata = "Nusantara TelaCore 2026";
+    Sistem::cetak_teks("  panjang()    = " + Konversi::bilangan_ke_teks(Teks::panjang(kata)));
+    Sistem::cetak_teks("  ubah_besar() = " + Teks::ubah_besar(kata));
+    Sistem::cetak_teks("  ubah_kecil() = " + Teks::ubah_kecil(kata));
+    Sistem::cetak_teks("  trim()       = '" + Teks::trim("  spasi  ") + "'");
+    Sistem::cetak_teks("  berisi Tela  = " + Konversi::logika_ke_teks(Teks::berisi(kata, "Tela")));
+    Sistem::cetak_teks("  ganti()      = " + Teks::ganti(kata, "Nusantara", "Indonesia"));
+    Sistem::cetak_teks("  ulangi()     = " + Teks::ulangi("Ha", 4));
+    Sistem::cetak_teks("  pad_kanan()  = '" + Teks::pad_kanan("Kiri", 12, ".") + "'");
+    Sistem::cetak_teks("  pad_kiri()   = '" + Teks::pad_kiri("Kanan", 12, ".") + "'");
+
+    judul("Modul Matematika::");
+    Sistem::cetak_teks("  pi()             = " + Konversi::desimal_ke_teks(Matematika::pi()));
+    Sistem::cetak_teks("  akar(144)        = " + Konversi::desimal_ke_teks(Matematika::akar(144.0)));
+    Sistem::cetak_teks("  pangkat(2, 16)   = " + Konversi::desimal_ke_teks(Matematika::pangkat(2.0, 16.0)));
+    Sistem::cetak_teks("  hipotenusa(3, 4) = " + Konversi::desimal_ke_teks(Matematika::hipotenusa(3.0, 4.0)));
+    Sistem::cetak_teks("  maksimum(17, 42) = " + Konversi::bilangan_ke_teks(Matematika::maksimum(17, 42)));
+    Sistem::cetak_teks("  minimum(17, 42)  = " + Konversi::bilangan_ke_teks(Matematika::minimum(17, 42)));
+
+    judul("Modul Waktu::");
+    Sistem::cetak_teks("  waktu_sekarang() = " + Waktu::waktu_sekarang());
+    Sistem::cetak_teks("  waktu_unix()     = " + Konversi::bilangan_ke_teks(Waktu::waktu_unix()));
+
+    judul("Modul Koleksi:: (Kamus)");
+    ubah km = Koleksi::kamus_baru();
+    Koleksi::simpan(km, "jakarta",  28);
+    Koleksi::simpan(km, "bandung",  22);
+    Koleksi::simpan(km, "surabaya", 31);
+    Sistem::cetak_teks("  jakarta   = " + Konversi::bilangan_ke_teks(Koleksi::ambil(km, "jakarta")));
+    Sistem::cetak_teks("  bandung   = " + Konversi::bilangan_ke_teks(Koleksi::ambil(km, "bandung")));
+    Sistem::cetak_teks("  ada bali  = " + Konversi::logika_ke_teks(Koleksi::ada(km, "bali")));
+
+    judul("Modul Bit::");
+    Sistem::cetak_teks("  geser_kiri(1, 8) = " + Konversi::bilangan_ke_teks(Bit::geser_kiri(1, 8)));
+    Sistem::cetak_teks("  dan(255, 15)     = " + Konversi::bilangan_ke_teks(Bit::dan(255, 15)));
+    Sistem::cetak_teks("  xor(170, 85)     = " + Konversi::bilangan_ke_teks(Bit::xor(170, 85)));
+    Sistem::cetak_teks("  hitung_satu(255) = " + Konversi::bilangan_ke_teks(Bit::hitung_satu(255)));
+
+    judul("Modul Uji:: (Unit Test)");
+    Uji::tegaskan(2 + 2 == 4, "2 + 2 harus 4");
+    Uji::tegaskan_sama(Matematika::maksimum(5, 10), 10, "maksimum(5,10) == 10");
+    Uji::tegaskan(Teks::berisi("TelaCore", "Tela"), "berisi 'Tela'");
+    Uji::tegaskan_teks_sama(Teks::ubah_besar("halo"), "HALO", "ubah_besar OK");
+
+    Sistem::cetak_baris();
+    Sistem::cetak_teks(Warna::hijau("Semua modul pustaka standar berjalan sempurna!"));
+}

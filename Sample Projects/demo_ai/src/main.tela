@@ -1,0 +1,58 @@
+gunakan Sistem::*;
+gunakan Warna::*;
+gunakan Matematika::*;
+gunakan Konversi::*;
+
+fungsi sigmoid(x: desimal) -> desimal {
+    ubah e = Matematika::pangkat(Matematika::e(), x * -1.0);
+    kembalikan 1.0 / (1.0 + e);
+}
+
+fungsi prediksi(x1: desimal, x2: desimal, w1: desimal, w2: desimal, bias: desimal) -> desimal {
+    ubah z = (x1 * w1) + (x2 * w2) + bias;
+    kembalikan sigmoid(z);
+}
+
+fungsi isi_bar(v: desimal) -> teks {
+    ubah persen = Matematika::pembulatan(v * 20.0);
+    ubah blok = Teks::ulangi("#", persen);
+    ubah kosong_bar = Teks::ulangi(".", 20 - persen);
+    kembalikan blok + kosong_bar;
+}
+
+fungsi tampil(label: teks, h: desimal) {
+    ubah pct = h * 100.0;
+    Sistem::cetak_teks(label + " [" + isi_bar(h) + "] " + Konversi::desimal_ke_teks(pct) + "%");
+}
+
+fungsi utama() {
+    gunakan Teks::*;
+    Sistem::cetak_teks(Warna::tebal(Warna::sian("=== TELACORE AI - PERCEPTRON ===")));
+    Sistem::cetak_teks("Model: 2 Input, 1 Neuron, Aktivasi Sigmoid");
+    Sistem::cetak_baris();
+
+    ubah w1 = 0.9;
+    ubah w2 = 0.9;
+    ubah bias = -0.4;
+
+    Sistem::cetak_teks(Warna::kuning("Gerbang OR:"));
+    tampil("OR(0,0)", prediksi(0.0, 0.0, w1, w2, bias));
+    tampil("OR(1,0)", prediksi(1.0, 0.0, w1, w2, bias));
+    tampil("OR(0,1)", prediksi(0.0, 1.0, w1, w2, bias));
+    tampil("OR(1,1)", prediksi(1.0, 1.0, w1, w2, bias));
+
+    Sistem::cetak_baris();
+
+    ubah wa1 = 1.0;
+    ubah wa2 = 1.0;
+    ubah bias_and = -1.5;
+
+    Sistem::cetak_teks(Warna::kuning("Gerbang AND:"));
+    tampil("AND(0,0)", prediksi(0.0, 0.0, wa1, wa2, bias_and));
+    tampil("AND(1,0)", prediksi(1.0, 0.0, wa1, wa2, bias_and));
+    tampil("AND(0,1)", prediksi(0.0, 1.0, wa1, wa2, bias_and));
+    tampil("AND(1,1)", prediksi(1.0, 1.0, wa1, wa2, bias_and));
+
+    Sistem::cetak_baris();
+    Sistem::cetak_teks(Warna::hijau("Perceptron AI selesai dijalankan!"));
+}

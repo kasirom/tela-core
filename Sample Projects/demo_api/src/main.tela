@@ -1,0 +1,35 @@
+gunakan Sistem::*;
+gunakan Warna::*;
+gunakan JSON::*;
+gunakan Kripto::*;
+gunakan Waktu::*;
+
+fungsi respons(status: teks, kode: bilangan, pesan: teks, data: teks) -> teks {
+    ubah o = JSON::buat_objek();
+    JSON::tambah_string(o, "status", status);
+    JSON::tambah_angka(o, "kode", kode);
+    JSON::tambah_string(o, "pesan", pesan);
+    JSON::tambah_string(o, "data", data);
+    JSON::tambah_string(o, "waktu", Waktu::waktu_sekarang());
+    kembalikan JSON::ke_string(o);
+}
+
+fungsi router(path: teks) -> teks {
+    jika path == "/"       { kembalikan respons("sukses", 200, "API TelaCore berjalan!", "v0.2.0"); }
+    jika path == "/health" { kembalikan respons("sukses", 200, "Status OK", "UP"); }
+    jika path == "/token"  { kembalikan respons("sukses", 200, "Token API", Kripto::sha256("secret-nusantara")); }
+    jika path == "/waktu"  { kembalikan respons("sukses", 200, "Waktu server", Waktu::waktu_sekarang()); }
+    kembalikan respons("error", 404, "Endpoint tidak ditemukan", path);
+}
+
+fungsi utama() {
+    Sistem::cetak_teks(Warna::tebal(Warna::sian("=== TELACORE REST API ENGINE ===")));
+    Sistem::cetak_baris();
+    Sistem::cetak_teks("GET /        -> " + router("/"));
+    Sistem::cetak_teks("GET /health  -> " + router("/health"));
+    Sistem::cetak_teks("GET /token   -> " + router("/token"));
+    Sistem::cetak_teks("GET /waktu   -> " + router("/waktu"));
+    Sistem::cetak_teks("GET /unknown -> " + router("/unknown"));
+    Sistem::cetak_baris();
+    Sistem::cetak_teks(Warna::hijau("API Engine berjalan sempurna!"));
+}

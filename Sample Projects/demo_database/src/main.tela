@@ -1,0 +1,58 @@
+gunakan Sistem::*;
+gunakan Warna::*;
+gunakan JSON::*;
+gunakan Berkas::*;
+gunakan Kripto::*;
+gunakan Konversi::*;
+gunakan Waktu::*;
+gunakan Teks::*;
+
+fungsi buat_user(id: teks, nama: teks, email: teks, peran: teks) -> teks {
+    ubah o = JSON::buat_objek();
+    JSON::tambah_string(o, "id", id);
+    JSON::tambah_string(o, "nama", nama);
+    JSON::tambah_string(o, "email", email);
+    JSON::tambah_string(o, "peran", peran);
+    JSON::tambah_string(o, "token", Kripto::sha256(email + id));
+    JSON::tambah_string(o, "dibuat", Waktu::waktu_sekarang());
+    kembalikan JSON::ke_string(o);
+}
+
+fungsi bagian(judul: teks) {
+    Sistem::cetak_baris();
+    Sistem::cetak_teks(Warna::kuning("-- " + judul + " --"));
+}
+
+fungsi utama() {
+    Sistem::cetak_teks(Warna::tebal(Warna::sian("=== TELACORE FILE DATABASE CRUD ===")));
+    ubah db_file = "bangun/users.json";
+
+    bagian("CREATE -- Membuat Record");
+    ubah u1 = buat_user("USR-001", "Ahmad Fauzi",  "ahmad@nusantara.id", "admin");
+    ubah u2 = buat_user("USR-002", "Siti Rahmah",  "siti@nusantara.id",  "user");
+    ubah u3 = buat_user("USR-003", "Budi Santoso", "budi@nusantara.id",  "moderator");
+    ubah u4 = buat_user("USR-004", "Dewi Lestari", "dewi@nusantara.id",  "user");
+    Sistem::cetak_teks("  + USR-001: Ahmad Fauzi   [admin]");
+    Sistem::cetak_teks("  + USR-002: Siti Rahmah   [user]");
+    Sistem::cetak_teks("  + USR-003: Budi Santoso  [moderator]");
+    Sistem::cetak_teks("  + USR-004: Dewi Lestari  [user]");
+
+    bagian("WRITE -- Simpan ke " + db_file);
+    ubah isi = "[" + u1 + "," + u2 + "," + u3 + "," + u4 + "]";
+    Berkas::tulis_semua(db_file, isi);
+    Sistem::cetak_teks(Warna::hijau("  Tersimpan: " + Konversi::bilangan_ke_teks(Berkas::ukuran_file(db_file)) + " bytes"));
+
+    bagian("READ -- Baca dari " + db_file);
+    ubah data = Berkas::baca_semua(db_file);
+    Sistem::cetak_teks("  Panjang: " + Konversi::bilangan_ke_teks(Teks::panjang(data)) + " karakter");
+
+    bagian("INTEGRITY -- Checksum SHA-256");
+    Sistem::cetak_teks("  " + Kripto::sha256(data));
+
+    bagian("BACKUP -- Salin ke users_backup.json");
+    Berkas::salin_file(db_file, "bangun/users_backup.json");
+    Sistem::cetak_teks(Warna::hijau("  Backup berhasil!"));
+
+    Sistem::cetak_baris();
+    Sistem::cetak_teks(Warna::hijau("Semua operasi CRUD database berhasil!"));
+}

@@ -1,0 +1,111 @@
+gunakan Sistem::*;
+gunakan Warna::*;
+gunakan Teks::*;
+gunakan Konversi::*;
+gunakan Matematika::*;
+gunakan Kripto::*;
+gunakan JSON::*;
+gunakan Waktu::*;
+gunakan Koleksi::*;
+gunakan Uji::*;
+
+fungsi garis(simbol: teks, panjang_g: bilangan) -> teks {
+    kembalikan Teks::ulangi(simbol, panjang_g);
+}
+
+fungsi banner(judul: teks) {
+    Sistem::cetak_baris();
+    Sistem::cetak_teks(Warna::sian(garis("=", 50)));
+    Sistem::cetak_teks(Warna::tebal(Warna::kuning("  " + judul)));
+    Sistem::cetak_teks(Warna::sian(garis("=", 50)));
+}
+
+fungsi info(label: teks, nilai: teks) {
+    Sistem::cetak_teks("  " + Teks::pad_kanan(label, 22, ".") + " " + Warna::hijau(nilai));
+}
+
+fungsi bagian_sistem() {
+    banner("1. INFO SISTEM");
+    info("OS", Sistem::nama_os());
+    info("Arsitektur", Sistem::arsitektur());
+    info("Waktu", Waktu::waktu_sekarang());
+    info("Unix Timestamp", Konversi::bilangan_ke_teks(Waktu::waktu_unix()));
+}
+
+fungsi bagian_matematika() {
+    banner("2. MATEMATIKA");
+    info("pi()", Konversi::desimal_ke_teks(Matematika::pi()));
+    info("akar(2)", Konversi::desimal_ke_teks(Matematika::akar(2.0)));
+    info("pangkat(2, 32)", Konversi::desimal_ke_teks(Matematika::pangkat(2.0, 32.0)));
+    info("sin(pi/2)", Konversi::desimal_ke_teks(Matematika::sin(Matematika::pi() / 2.0)));
+    info("hipotenusa(5,12)", Konversi::desimal_ke_teks(Matematika::hipotenusa(5.0, 12.0)));
+    info("acak_rentang(1,100)", Konversi::bilangan_ke_teks(Matematika::acak_rentang(1, 100)));
+}
+
+fungsi bagian_kripto() {
+    banner("3. KRIPTOGRAFI");
+    ubah pesan = "TelaCore Nusantara 2026";
+    info("Pesan", pesan);
+    info("SHA-256", Teks::potong(Kripto::sha256(pesan), 0, 32) + "...");
+    info("MD5", Kripto::md5(pesan));
+    info("Base64", Kripto::base64_encode(pesan));
+    info("ROT13", Kripto::rot13(pesan));
+    info("Acak Kripto", Kripto::acak_kripto(16));
+    info("CRC-32", Konversi::bilangan_ke_teks(Kripto::crc32(pesan)));
+}
+
+fungsi bagian_json() {
+    banner("4. JSON BUILDER");
+    ubah o = JSON::buat_objek();
+    JSON::tambah_string(o, "bahasa", "TelaCore");
+    JSON::tambah_string(o, "versi", "0.2.0");
+    JSON::tambah_angka(o, "tahun", 2026);
+    JSON::tambah_string(o, "negara", "Indonesia");
+    JSON::tambah_logika(o, "dunia", benar);
+    JSON::tambah_string(o, "dibuat", Waktu::waktu_sekarang());
+    Sistem::cetak_teks("  " + JSON::ke_string(o));
+}
+
+fungsi bagian_koleksi() {
+    banner("5. KOLEKSI KAMUS");
+    ubah km = Koleksi::kamus_baru();
+    Koleksi::simpan(km, "Rust",     100);
+    Koleksi::simpan(km, "C",        98);
+    Koleksi::simpan(km, "Python",   70);
+    Koleksi::simpan(km, "TelaCore", 100);
+    info("Skor Rust",     Konversi::bilangan_ke_teks(Koleksi::ambil(km, "Rust")));
+    info("Skor C",        Konversi::bilangan_ke_teks(Koleksi::ambil(km, "C")));
+    info("Skor Python",   Konversi::bilangan_ke_teks(Koleksi::ambil(km, "Python")));
+    info("Skor TelaCore", Konversi::bilangan_ke_teks(Koleksi::ambil(km, "TelaCore")));
+    info("Total entri",   Konversi::bilangan_ke_teks(Koleksi::panjang_kamus(km)));
+}
+
+fungsi bagian_uji() {
+    banner("6. UNIT TEST (Uji::)");
+    Uji::tegaskan(1 + 1 == 2, "1 + 1 = 2");
+    Uji::tegaskan(Matematika::maksimum(7, 13) == 13, "maksimum(7,13) = 13");
+    Uji::tegaskan(Teks::panjang("TelaCore") == 8, "panjang TelaCore = 8");
+    Uji::tegaskan_teks_sama(Teks::ubah_besar("nusantara"), "NUSANTARA", "ubah_besar");
+    Uji::tegaskan(Teks::berisi("Bahasa Indonesia", "Indonesia"), "berisi Indonesia");
+}
+
+fungsi utama() {
+    Sistem::bersihkan_layar();
+    Sistem::cetak_teks(Warna::tebal(Warna::sian(garis("*", 50))));
+    Sistem::cetak_teks(Warna::tebal(Warna::kuning("   DEMO NUSANTARA - TelaCore World-Class")));
+    Sistem::cetak_teks(Warna::tebal(Warna::kuning("   Bahasa LLVM Native Indonesia Pertama")));
+    Sistem::cetak_teks(Warna::tebal(Warna::sian(garis("*", 50))));
+
+    bagian_sistem();
+    bagian_matematika();
+    bagian_kripto();
+    bagian_json();
+    bagian_koleksi();
+    bagian_uji();
+
+    Sistem::cetak_baris();
+    Sistem::cetak_teks(Warna::sian(garis("=", 50)));
+    Sistem::cetak_teks(Warna::tebal(Warna::hijau("  TelaCore v0.2.0 - Semua sistem OK!")));
+    Sistem::cetak_teks(Warna::tebal(Warna::hijau("  Kompilasi LLVM native Bahasa Indonesia.")));
+    Sistem::cetak_teks(Warna::sian(garis("=", 50)));
+}

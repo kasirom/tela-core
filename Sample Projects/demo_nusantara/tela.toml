@@ -1,0 +1,6 @@
+[proyek]
+nama = "demo_nusantara"
+versi = "1.0.0"
+entry = "src/main.tela"
+
+[ketergantungan]

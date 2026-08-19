@@ -1,0 +1,45 @@
+gunakan Sistem::*;
+gunakan Warna::*;
+gunakan Kripto::*;
+gunakan Konversi::*;
+gunakan Waktu::*;
+gunakan Teks::*;
+
+/// Hash satu blok: SHA256(indeks|data|prev_hash)
+fungsi hash_blok(idx: bilangan, data: teks, prev: teks) -> teks {
+    kembalikan Kripto::sha256(Konversi::bilangan_ke_teks(idx) + "|" + data + "|" + prev);
+}
+
+/// Tampilkan informasi satu blok
+fungsi tampil_blok(idx: bilangan, data: teks, hash: teks, prev: teks) {
+    Sistem::cetak_teks(Warna::sian("BLOK #" + Konversi::bilangan_ke_teks(idx)));
+    Sistem::cetak_teks("  Data  : " + data);
+    Sistem::cetak_teks("  Prev  : " + Teks::potong(prev, 0, 16) + "...");
+    Sistem::cetak_teks(Warna::hijau("  Hash  : " + Teks::potong(hash, 0, 16) + "..."));
+    Sistem::cetak_teks("  Waktu : " + Waktu::waktu_sekarang());
+    Sistem::cetak_teks("----------------------------------");
+}
+
+fungsi utama() {
+    Sistem::cetak_teks(Warna::tebal(Warna::kuning("=== NUSANTARA BLOCKCHAIN v1.0 ===")));
+    Sistem::cetak_teks("Menggunakan SHA-256 via Win32 CryptoAPI");
+    Sistem::cetak_baris();
+
+    ubah genesis_prev = "0000000000000000000000000000000000000000000000000000000000000000";
+
+    ubah h0 = hash_blok(0, "Genesis: Nusantara Chain Dimulai", genesis_prev);
+    tampil_blok(0, "Genesis: Nusantara Chain Dimulai", h0, genesis_prev);
+
+    ubah h1 = hash_blok(1, "Tx: Budi -> Siti Rp 1.500.000", h0);
+    tampil_blok(1, "Tx: Budi -> Siti Rp 1.500.000", h1, h0);
+
+    ubah h2 = hash_blok(2, "Tx: SmartContract Umroh 2026", h1);
+    tampil_blok(2, "Tx: SmartContract Umroh 2026", h2, h1);
+
+    ubah h3 = hash_blok(3, "Tx: Wakaf Digital Masjid Nusantara", h2);
+    tampil_blok(3, "Tx: Wakaf Digital Masjid Nusantara", h3, h2);
+
+    Sistem::cetak_baris();
+    Sistem::cetak_teks(Warna::hijau("Blockchain 4 blok berhasil divalidasi!"));
+    Sistem::cetak_teks(Warna::sian("Setiap blok terhubung via SHA-256."));
+}
